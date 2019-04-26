@@ -3,10 +3,10 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-DEBIAN.SH
-# Version 3.3 (AMD64)
-# Nextcloud 15
-# OpenSSL 1.1.1, TLSv1.3, NGINX latest, PHP 7.3
-# April, 13th 2019
+# Version 4 (AMD64)
+# Nextcloud 16
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3
+# April, 26th 2019
 #########################################################
 # Debian Stretch 9.x AMD64 - Nextcloud 15
 #########################################################
@@ -525,12 +525,13 @@ sed -i "s/server_name YOUR.DEDYN.IO;/server_name $(hostname);/" /etc/nginx/conf.
 ###restart NGINX
 /usr/sbin/service nginx restart
 ###Download Nextclouds latest release and extract it
-wget https://download.nextcloud.com/server/releases/latest.tar.bz2
-tar -xjf latest.tar.bz2 -C /var/www
+# wget https://download.nextcloud.com/server/releases/latest.tar.bz2
+wget https://download.nextcloud.com/server/releases/nextcloud-16.0.0.tar.bz2
+tar -xjf nextcloud-*.tar.bz2 -C /var/www
 ###apply permissions
 chown -R www-data:www-data /var/www/
 ###remove the Nextcloud sources
-rm -f latest.tar.bz2
+rm -f nextcloud-*.tar.bz2
 ###update and restart all sources and services
 update_and_clean
 restart_all_services
