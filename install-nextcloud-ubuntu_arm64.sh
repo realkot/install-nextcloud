@@ -3,16 +3,14 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD.SH
-# Version 7.6 (ARM64)
-# Nextcloud 15
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.10, PHP7.3
-# April, 13th 2019
-################################################
-# resolver set to 127.0.0.1
+# Version 4 (ARM64)
+# Nextcloud 16
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.12, PHP7.3
+# April, 26th 2019
 ################################################
 #!/bin/bash
 ### Set current NGINX Releaseversion
-NGINXVER="1.15.10"
+NGINXVER="1.15.12"
 ###global function to update and cleanup the environment
 function update_and_clean() {
 apt update
@@ -522,11 +520,12 @@ sed -i "s/server_name YOUR.DEDYN.IO;/server_name $(hostname);/" /etc/nginx/conf.
 ###restart NGINX
 service nginx restart
 ###Download Nextclouds latest release and extract it
-wget https://download.nextcloud.com/server/releases/latest.tar.bz2
-tar -xjf latest.tar.bz2 -C /var/www
+# wget https://download.nextcloud.com/server/releases/latest.tar.bz2
+wget https://download.nextcloud.com/server/releases/nextcloud-16.0.0.tar.bz2
+tar -xjf nextcloud-*.tar.bz2 -C /var/www
 ###apply permissions
 chown -R www-data:www-data /var/www/
-rm latest.tar.bz2
+rm nextcloud-*.tar.bz2
 update_and_clean
 restart_all_services
 clear
