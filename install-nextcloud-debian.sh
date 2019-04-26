@@ -8,9 +8,7 @@
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3
 # April, 26th 2019
 #########################################################
-# Debian Stretch 9.x AMD64 - Nextcloud 15
-#########################################################
-# resolver set to 127.0.0.1
+# Debian Stretch 9.x AMD64 - Nextcloud 16
 #########################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
