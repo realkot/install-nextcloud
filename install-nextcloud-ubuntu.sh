@@ -439,21 +439,21 @@ ssl_prefer_server_ciphers on;
 ssl_stapling on;
 ssl_stapling_verify on;
 EOF
-###add a default dhparam.pem file
+###add a default dhparam.pem file // https://wiki.mozilla.org/Security/Server_Side_TLS#ffdhe4096
 touch /etc/ssl/certs/dhparam.pem
 cat <<EOF >/etc/ssl/certs/dhparam.pem
 -----BEGIN DH PARAMETERS-----
-MIICCAKCAgEA6tGoB0bEUoL1qoNXPJIcE3ObJz9LsPPgm6XevDXgDb0Gw53hN1+C
-tYRDwhRKt8wI16CrjEvx60FxOiRbbfF1QOcEVwNDSfXiac2ovjRlJTeO0CueeMN7
-oTI/yZKkDgEjx+Hv3u/UMT+kyqL9/i4yxg+xpysUYeAEgfg974BTmNIj0KzShbVF
-26JmQyod5YqR80vJ5wSIyy4L3HgKtc4tZTHxZltC9Kn4SRsgwIBiTOI4Gnfw1268
-N/U8IoKoUaQMjubG4cdVaaVN83eITiER6xGy7Nfpdnet42zm3UWaW03FlmB0nd3s
-Y4C6OzyV743UoIQDARt1Pk/H6SkwlcIwkyICjNbtTe7nrBzmCBI3OB6zBKiPb7nz
-2kPW2cm2e6Pa3WtSWsfl89QLSzB/b/BG3+FqK/aVI0OEyEb8dV5boOlI1fIGiH0d
-cjAr6bwArEiOxi3TaVCMDF4tvVZcsB7icGTQ6tsGyqhzrnWlyb8Tn4GuiHgGGz7r
-rAP5tv02AmtRTQ/jv+JXX2In+9Hrm5yhT7KpsWMF1mCQKqdpfu0+6MKPSfrXu9l/
-Uk/SRa/i7GrBuMPDabx33sTZsY4OlkvRB6D7WN+G+ArLfIcgeegpMyBHvrjcnJN4
-ILVziHHg2Z70Z2hfEsOaSCuApJlggqSeRjgGm/wlTaOnbonkhsndnFMCAQI=
+MIICCAKCAgEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz
++8yTnc4kmz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a
+87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2rec1MKzKT0g6eXq8CrGCsyT7
+YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi
+7MA0BM0oNC9hkXL+nOmFg/+OTxIy7vKBg8P+OxtMb61zO7X8vC7CIAXFjvGDfRaD
+ssbzSibBsu/6iGtCOGEfz9zeNVs7ZRkDW7w09N75nAI4YbRvydbmyQd62R0mkff3
+7lmMsPrBhtkcrv4TCYUTknC0EwyTvEN5RPT9RFLi103TZPLiHnH1S/9croKrnJ32
+nuhtK8UiNjoNq8Uhl5sN6todv5pC1cRITgq80Gv6U93vPBsg7j/VnXwl5B0rZp4e
+8W5vUsMWTfT7eTDp5OWIV7asfV9C1p9tGHdjzx1VA0AEh/VbpX4xzHpxNciG77Qx
+iu1qHgEtnmgyqQdgCpGBMMRtx3j5ca0AOAkpmaMzy4t6Gh25PXFAADwqTs6p+Y0K
+zAqCkc3OyX3Pjsm1Wn+IpGtNtahR9EGC4caKAH5eZV9q//////////8CAQI=
 -----END DH PARAMETERS-----
 EOF
 ###create a proxy configuration file
