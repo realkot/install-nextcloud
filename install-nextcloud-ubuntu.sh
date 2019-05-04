@@ -3,10 +3,10 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-UBUNTU.SH
-# Version 4 (AMD64)
+# Version 5 (AMD64)
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3
-# April, 26h 2019
+# May, 04h 2019
 #########################################################
 # Ubuntu Bionic Beaver 18.04.x AMD64 - Nextcloud 16
 #########################################################
@@ -119,7 +119,7 @@ open_file_cache_errors on;
 keepalive_timeout 65;
 reset_timedout_connection on;
 server_tokens off;
-resolver 127.0.0.1 valid=30s;
+resolver 127.0.0.53 valid=30s;
 resolver_timeout 5s;
 include /etc/nginx/conf.d/*.conf;
 }
