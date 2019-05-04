@@ -3,10 +3,10 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD.SH
-# Version 4 (ARM64)
+# Version 5 (ARM64)
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.12, PHP7.3
-# April, 26th 2019
+# May, 04th 2019
 ################################################
 #!/bin/bash
 ### Set current NGINX Releaseversion
@@ -129,7 +129,7 @@ open_file_cache_errors on;
 keepalive_timeout 65;
 reset_timedout_connection on;
 server_tokens off;
-resolver 127.0.0.1 valid=30s;
+resolver 127.0.0.53 valid=30s;
 resolver_timeout 5s;
 include /etc/nginx/conf.d/*.conf;
 }
