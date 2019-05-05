@@ -3,10 +3,10 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-PSQLUBUNTU.SH
-# BETA // DRAFT (AMD64)
+# Version 1.0 (AMD64)
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3, PSQL11
-# May, 04h 2019
+# May, 05h 2019
 #########################################################
 # Ubuntu Bionic Beaver 18.04.x AMD64 - Nextcloud 16
 #########################################################
@@ -203,6 +203,57 @@ sudo -u postgres psql <<END
 CREATE USER nextcloud WITH PASSWORD 'nextcloud';
 CREATE DATABASE nextcloud WITH OWNER nextcloud TEMPLATE template0 ENCODING 'UTF8';
 END
+service postgresql stop
+mv /etc/postgresql/11/main/postgresql.conf /etc/postgresql/11/main/postgresql.conf.bak && touch /etc/postgresql/11/main/postgresql.conf
+cat <<EOF >/etc/postgresql/11/main/postgresql.conf
+###################################################
+# DB Version: 11 from c-rieger.de                 #
+# OS Type: linux                                  #
+# DB Type: web                                    #
+# Total Memory (RAM): 2 GB                        #
+# CPUs num: 2                                     #
+# Data Storage: ssd                               #
+# More information and tweaks can be found here:  #
+# https://pgtune.leopard.in.ua/#/                 #
+###################################################
+checkpoint_completion_target = 0.7
+cluster_name = '11/main'
+data_directory = '/var/lib/postgresql/11/main'
+datestyle = 'iso, mdy'
+default_statistics_target = 100
+default_text_search_config = 'pg_catalog.english'
+dynamic_shared_memory_type = posix
+effective_cache_size = 1536MB
+effective_io_concurrency = 200
+external_pid_file = '/var/run/postgresql/11-main.pid'
+hba_file = '/etc/postgresql/11/main/pg_hba.conf'
+ident_file = '/etc/postgresql/11/main/pg_ident.conf'
+include_dir = 'conf.d'
+lc_messages = 'en_US.UTF-8'
+lc_monetary = 'en_US.UTF-8'
+lc_numeric = 'en_US.UTF-8'
+lc_time = 'en_US.UTF-8'
+log_line_prefix = '%m [%p] %q%u@%d '
+log_timezone = 'UCT'
+maintenance_work_mem = 128MB
+max_wal_size = 2GB
+max_connections = 200
+max_worker_processes = 2
+max_parallel_workers_per_gather = 1
+max_parallel_workers = 2
+min_wal_size = 1GB
+port = 5432
+random_page_cost = 1.1
+ssl = on
+ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
+ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
+shared_buffers = 512MB
+stats_temp_directory = '/var/run/postgresql/11-main.pg_stat_tmp'
+timezone = 'UCT'
+wal_buffers = 16MB
+work_mem = 2621kB
+unix_socket_directories = '/var/run/postgresql'
+EOF
 service postgresql restart && service php7.3-fpm restart
 update_and_clean
 ###install Redis-Server
