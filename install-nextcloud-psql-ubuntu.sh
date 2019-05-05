@@ -2,10 +2,10 @@
 # Carsten Rieger IT-Services
 # https://www.c-rieger.de
 # https://github.com/criegerde
-# INSTALL-NEXTCLOUD-UBUNTU.SH
-# Version 5 (AMD64)
+# INSTALL-NEXTCLOUD-PSQLUBUNTU.SH
+# BETA // DRAFT (AMD64)
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3, PSQL11
 # May, 04h 2019
 #########################################################
 # Ubuntu Bionic Beaver 18.04.x AMD64 - Nextcloud 16
