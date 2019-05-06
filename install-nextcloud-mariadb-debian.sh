@@ -46,7 +46,6 @@ ufw status verbose
 }
 ### START ###
 cd /usr/local/src
-								 
 apt install apt-transport-https git wget gnupg2 dirmngr -y
 mv /etc/apt/sources.list /etc/apt/sources.list.bak && touch /etc/apt/sources.list
 cat <<EOF >>/etc/apt/sources.list
@@ -55,7 +54,6 @@ deb http://security.debian.org/debian-security stretch/updates main
 deb [arch=amd64] http://mirror2.hs-esslingen.de/mariadb/repo/10.3/debian stretch main
 deb https://packages.sury.org/php/ stretch main
 deb https://packages.sury.org/nginx-mainline stretch main
-																						 
 EOF
 ###prepare the server environment
 wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
