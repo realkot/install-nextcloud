@@ -46,6 +46,7 @@ ufw status verbose
 }
 ### START ###
 cd /usr/local/src
+###prepare the server environment
 apt install apt-transport-https git wget gnupg2 dirmngr sudo locales-all -y
 mv /etc/apt/sources.list /etc/apt/sources.list.bak && touch /etc/apt/sources.list
 cat <<EOF >>/etc/apt/sources.list
@@ -60,10 +61,9 @@ wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 wget -O /etc/apt/trusted.gpg.d/nginx-mainline.gpg https://packages.sury.org/nginx-mainline/apt.gpg
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
 wget -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-###
 update_and_clean
-###
 apt install lsb-release ca-certificates software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl -y
+###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 update_and_clean
 apt install nginx -y
@@ -117,6 +117,7 @@ chown -R www-data:www-data /var/nc_data /var/www
 chown -R www-data:root /usr/local/tmp/sessions /usr/local/tmp/apc
 ###install PHP
 apt install php7.3-fpm php7.3-gd php7.3-pgsql php7.3-curl php7.3-xml php7.3-zip php7.3-intl php7.3-mbstring php7.3-json php7.3-bz2 php7.3-ldap php-apcu imagemagick php-imagick -y
+###adjust PHP
 cp /etc/php/7.3/fpm/pool.d/www.conf /etc/php/7.3/fpm/pool.d/www.conf.bak
 cp /etc/php/7.3/cli/php.ini /etc/php/7.3/cli/php.ini.bak
 cp /etc/php/7.3/fpm/php.ini /etc/php/7.3/fpm/php.ini.bak
@@ -205,6 +206,7 @@ CREATE USER nextcloud WITH PASSWORD 'nextcloud';
 CREATE DATABASE nextcloud WITH OWNER nextcloud TEMPLATE template0 ENCODING 'UTF8';
 END
 /usr/sbin/service postgresql stop
+mv /etc/postgresql/11/main/postgresql.conf /etc/postgresql/11/main/postgresql.conf.bak && touch /etc/postgresql/11/main/postgresql.conf
 ###configure PostgreSQL
 cat <<EOF >/etc/postgresql/11/main/postgresql.conf
 ###################################################
@@ -444,6 +446,7 @@ fastcgi_cache_methods GET HEAD;
 EOF
 ###enable all nginx configuration files
 sed -i s/\#\include/\include/g /etc/nginx/nginx.conf
+###enable all nginx configuration files
 sed -i "s/server_name YOUR.DEDYN.IO;/server_name $(hostname);/" /etc/nginx/conf.d/nextcloud.conf
 ###create Nextclouds cronjob
 (crontab -u www-data -l ; echo "*/5 * * * * php -f /var/www/nextcloud/cron.php > /dev/null 2>&1") | crontab -u www-data -
@@ -594,6 +597,7 @@ ufw logging medium && ufw default deny incoming && ufw enable
 /usr/sbin/service ufw restart
 /usr/sbin/service fail2ban restart
 /usr/sbin/service redis-server restart
+###enable audit and pdf apps
 su - www-data -s /bin/bash -c 'php /var/www/nextcloud/occ app:disable survey_client'
 su - www-data -s /bin/bash -c 'php /var/www/nextcloud/occ app:disable firstrunwizard'
 su - www-data -s /bin/bash -c 'php /var/www/nextcloud/occ app:enable admin_audit'
