@@ -3,7 +3,7 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-PSQL-DEBIAN.SH
-# Version BETA // DRAFT (AMD64)
+# Version 1.0 (AMD64)
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3, PSQL
 # May, 06th 2019
