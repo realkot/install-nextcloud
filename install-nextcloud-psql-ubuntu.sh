@@ -6,7 +6,7 @@
 # Version 1.0 (AMD64)
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3, PSQL
-# May, 05h 2019
+# May, 06h 2019
 #########################################################
 # Ubuntu Bionic Beaver 18.04.x AMD64 - Nextcloud 16
 #########################################################
@@ -63,6 +63,8 @@ wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-
 update_and_clean
 apt install software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl -y
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
+apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
+update_and_clean
 apt install nginx -y
 ###enable NGINX autostart
 systemctl enable nginx.service
@@ -188,7 +190,7 @@ sed -i '$aapc.lazy_classes=0' /etc/php/7.3/fpm/php.ini
 sed -i '$aapc.lazy_functions=0' /etc/php/7.3/fpm/php.ini
 sed -i "s/09,39.*/# &/" /etc/cron.d/php
 (crontab -l ; echo "09,39 * * * * /usr/lib/php/sessionclean 2>&1") | crontab -u root -
-###modify /etc/fstab to use tmpfs
+###edit fstab to make use of tmpfs
 sed -i '$atmpfs /usr/local/tmp/apc tmpfs defaults,uid=33,size=300M,noatime,nosuid,nodev,noexec,mode=1777 0 0' /etc/fstab
 sed -i '$atmpfs /usr/local/tmp/sessions tmpfs defaults,uid=33,size=300M,noatime,nosuid,nodev,noexec,mode=1777 0 0' /etc/fstab
 ###make use of tmpfs
@@ -202,8 +204,9 @@ sudo -u postgres psql <<END
 CREATE USER nextcloud WITH PASSWORD 'nextcloud';
 CREATE DATABASE nextcloud WITH OWNER nextcloud TEMPLATE template0 ENCODING 'UTF8';
 END
-service postgresql stop
+/usr/sbin/service postgresql stop
 mv /etc/postgresql/11/main/postgresql.conf /etc/postgresql/11/main/postgresql.conf.bak && touch /etc/postgresql/11/main/postgresql.conf
+###configure PostgreSQL
 cat <<EOF >/etc/postgresql/11/main/postgresql.conf
 ###################################################
 # DB Version: 11 from c-rieger.de                 #
@@ -253,7 +256,7 @@ wal_buffers = 16MB
 work_mem = 2621kB
 unix_socket_directories = '/var/run/postgresql'
 EOF
-service postgresql restart && service php7.3-fpm restart
+/usr/sbin/service postgresql restart && /usr/sbin/service php7.3-fpm restart
 update_and_clean
 ###install Redis-Server
 apt install redis-server php-redis -y
@@ -299,9 +302,9 @@ location = /.well-known/caldav {
 return 301 \$scheme://\$host/remote.php/dav;
 }
 #SOCIAL app enabled? Please uncomment the following three rows
-#rewrite ^/.well-known/webfinger /nextcloud/public.php?service=webfinger last;
-#rewrite ^/.well-known/host-meta /nextcloud/public.php?service=host-meta last;
-#rewrite ^/.well-known/host-meta.json /nextcloud/public.php?service=host-meta-json last;
+#rewrite ^/.well-known/webfinger /public.php?service=webfinger last;
+#rewrite ^/.well-known/host-meta /public.php?service=host-meta last;
+#rewrite ^/.well-known/host-meta.json /public.php?service=host-meta-json last;
 client_max_body_size 10240M;
 location / {
 rewrite ^ /index.php\$request_uri;
@@ -447,7 +450,7 @@ sed -i "s/server_name YOUR.DEDYN.IO;/server_name $(hostname);/" /etc/nginx/conf.
 ###create Nextclouds cronjob
 (crontab -u www-data -l ; echo "*/5 * * * * php -f /var/www/nextcloud/cron.php > /dev/null 2>&1") | crontab -u www-data -
 ###restart NGINX
-service nginx restart
+/usr/sbin/service nginx restart
 ###Download Nextclouds latest release and extract it
 # wget https://download.nextcloud.com/server/releases/latest.tar.bz2
 wget https://download.nextcloud.com/server/releases/nextcloud-16.0.0.tar.bz2
@@ -495,6 +498,7 @@ cp /var/www/nextcloud/.user.ini /usr/local/src/.user.ini.bak
 sudo -u www-data sed -i "s/upload_max_filesize=.*/upload_max_filesize=10240M/" /var/www/nextcloud/.user.ini
 sudo -u www-data sed -i "s/post_max_size=.*/post_max_size=10240M/" /var/www/nextcloud/.user.ini
 sudo -u www-data sed -i "s/output_buffering=.*/output_buffering='Off'/" /var/www/nextcloud/.user.ini
+chown -R www-data:www-data /var/www
 sudo -u www-data php /var/www/nextcloud/occ background:cron
 ###apply optimizations to Nextclouds global config.php
 sed -i '/);/d' /var/www/nextcloud/config/config.php
@@ -527,9 +531,9 @@ array (
 'htaccess.RewriteBase' => '/',
 'integrity.check.disabled' => false,
 'knowledgebaseenabled' => false,
+'logtimezone' => 'Europe/Berlin',								 
 'log_rotate_size' => 104857600,
 'logfile' => '/var/nc_data/nextcloud.log',
-'logtimezone' => 'Europe/Berlin',
 'memcache.local' => '\\OC\\Memcache\\APCu',
 'memcache.locking' => '\\OC\\Memcache\\Redis',
 'preview_max_x' => 1024,
@@ -549,6 +553,7 @@ array (
 EOF
 ###remove leading whitespaces
 sed -i 's/^[ ]*//' /var/www/nextcloud/config/config.php
+chown -R www-data:www-data /var/www
 restart_all_services
 update_and_clean
 ###install fail2ban
@@ -592,6 +597,8 @@ ufw logging medium && ufw default deny incoming && ufw enable
 /usr/sbin/service fail2ban restart
 /usr/sbin/service redis-server restart
 ###enable audit and pdf apps
+sudo -u www-data php /var/www/nextcloud/occ app:disable survey_client
+sudo -u www-data php /var/www/nextcloud/occ app:disable firstrunwizard
 sudo -u www-data php /var/www/nextcloud/occ app:enable admin_audit
 sudo -u www-data php /var/www/nextcloud/occ app:enable files_pdfviewer
 ###clean up redis-server
