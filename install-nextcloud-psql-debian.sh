@@ -625,7 +625,7 @@ clear
 echo ""
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
-echo " Open your browser and call your Nextcloud at"
+echo " Open your browser and call your Nextcloud at:"
 echo ""
 echo " https://$YOURSERVERNAME"
 echo ""
