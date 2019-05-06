@@ -44,26 +44,6 @@ su - www-data -s /bin/bash -c 'php /var/www/nextcloud/occ files:scan-app-data'
 fail2ban-client status nextcloud
 ufw status verbose
 }
-###global function to show information regarding the upcoming MariaDB dialogue
-function mariadbinfo() {
-clear
-echo ""
-echo "***********************************************************"
-echo "You will be asked to set the MariaDB root password 3 times."
-echo ""
-echo "Please just confirm the dialogue (ENTER) without setting"
-echo "any password yet!"
-echo ""
-echo "You will be asked again to set the root pwd while harden"
-echo "your MariaDB Server!"
-echo "***********************************************************"
-echo ""
-echo "Press ENTER to install MariaDB"
-echo ""
-echo "***********************************************************"
-read
-clear
-}
 ### START ###
 cd /usr/local/src
 apt install apt-transport-https git wget gnupg2 dirmngr sudo -y
@@ -219,7 +199,7 @@ mount -a
 /usr/sbin/service php7.3-fpm restart
 /usr/sbin/service nginx restart
 ###install PostgreSQL
-apt update && apt install install postgresql-11 -y
+apt update && apt install postgresql-11 -y
 sudo -u postgres psql <<END
 CREATE USER nextcloud WITH PASSWORD 'nextcloud';
 CREATE DATABASE nextcloud WITH OWNER nextcloud TEMPLATE template0 ENCODING 'UTF8';
