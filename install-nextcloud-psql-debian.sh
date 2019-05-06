@@ -46,7 +46,7 @@ ufw status verbose
 }
 ### START ###
 cd /usr/local/src
-apt install apt-transport-https git wget gnupg2 dirmngr sudo -y
+apt install apt-transport-https git wget gnupg2 dirmngr sudo locales-all -y
 mv /etc/apt/sources.list /etc/apt/sources.list.bak && touch /etc/apt/sources.list
 cat <<EOF >>/etc/apt/sources.list
 deb http://deb.debian.org/debian stretch main
