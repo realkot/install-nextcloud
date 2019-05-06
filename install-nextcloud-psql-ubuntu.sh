@@ -196,8 +196,7 @@ mount -a
 ###restart PHP and NGINX
 /usr/sbin/service php7.3-fpm restart
 /usr/sbin/service nginx restart
-###install MariaDB
-mariadbinfo
+###install PostgreSQL
 apt update && apt install postgresql-11 -y
 sudo -u postgres psql <<END
 CREATE USER nextcloud WITH PASSWORD 'nextcloud';
