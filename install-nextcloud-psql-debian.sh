@@ -116,7 +116,7 @@ mkdir -p /var/nc_data /var/www/letsencrypt /usr/local/tmp/sessions /usr/local/tm
 chown -R www-data:www-data /var/nc_data /var/www
 chown -R www-data:root /usr/local/tmp/sessions /usr/local/tmp/apc
 ###install PHP
-apt install php7.3-fpm php7.3-gd php7.3-mysql php7.3-curl php7.3-xml php7.3-zip php7.3-intl php7.3-mbstring php7.3-json php7.3-bz2 php7.3-ldap php-apcu imagemagick php-imagick -y
+apt install php7.3-fpm php7.3-gd php7.3-pgsql php7.3-curl php7.3-xml php7.3-zip php7.3-intl php7.3-mbstring php7.3-json php7.3-bz2 php7.3-ldap php-apcu imagemagick php-imagick -y
 cp /etc/php/7.3/fpm/pool.d/www.conf /etc/php/7.3/fpm/pool.d/www.conf.bak
 cp /etc/php/7.3/cli/php.ini /etc/php/7.3/cli/php.ini.bak
 cp /etc/php/7.3/fpm/php.ini /etc/php/7.3/fpm/php.ini.bak
