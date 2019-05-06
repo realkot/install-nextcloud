@@ -5,7 +5,7 @@
 # INSTALL-NEXTCLOUD-MARIADB-DEBIAN.SH
 # Version 6 (AMD64)
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3, MariaDB
 # May, 06th 2019
 #########################################################
 # Debian Stretch 9.x AMD64 - Nextcloud 16
@@ -46,6 +46,7 @@ ufw status verbose
 }
 ### START ###
 cd /usr/local/src
+								 
 apt install apt-transport-https git wget gnupg2 dirmngr -y
 mv /etc/apt/sources.list /etc/apt/sources.list.bak && touch /etc/apt/sources.list
 cat <<EOF >>/etc/apt/sources.list
@@ -54,6 +55,7 @@ deb http://security.debian.org/debian-security stretch/updates main
 deb [arch=amd64] http://mirror2.hs-esslingen.de/mariadb/repo/10.3/debian stretch main
 deb https://packages.sury.org/php/ stretch main
 deb https://packages.sury.org/nginx-mainline stretch main
+																						 
 EOF
 ###prepare the server environment
 wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
@@ -64,6 +66,7 @@ update_and_clean
 ###
 apt install lsb-release ca-certificates software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl -y
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
+###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 update_and_clean
 apt install nginx -y
 ###enable NGINX autostart
@@ -287,7 +290,7 @@ quote-names
 key_buffer = 16M
 EOF
 /usr/sbin/service mysql restart
-###restart MariaDB server and connect to MariaDB to create the databse
+###restart MariaDB server and connect to MariaDB to create the database
 clear
 echo ""
 echo " Enter the MariaDB root password when prompted for a password!"
@@ -577,9 +580,9 @@ array (
 'htaccess.RewriteBase' => '/',
 'integrity.check.disabled' => false,
 'knowledgebaseenabled' => false,
-'logtimezone' => 'Europe/Berlin',
 'log_rotate_size' => 104857600,
 'logfile' => '/var/nc_data/nextcloud.log',
+'logtimezone' => 'Europe/Berlin',								 
 'memcache.local' => '\\OC\\Memcache\\APCu',
 'memcache.locking' => '\\OC\\Memcache\\Redis',
 'preview_max_x' => 1024,
