@@ -308,33 +308,21 @@ quote-names
 key_buffer = 16M
 EOF
 /usr/sbin/service mysql restart
+###restart MariaDB server and connect to MariaDB to create the database																	  
 clear
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "The Nextcloud-DB username and password - Attention: password is case-sensitive:"
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
-read -p "Nextcloud DB-Name: " NEXTCLOUDDBNAME
+echo " Enter the MariaDB root password when prompted for a password!"
+echo " The Nextcloud database and its user will be created."
 echo ""
-echo "Your Nextcloud DB Name: "$NEXTCLOUDDBNAME
-echo ""
-read -p "Nextcloud DB-Username: " NEXTCLOUDDBUSER
-echo ""
-echo "Your Nextcloud-DB user: "$NEXTCLOUDDBUSER
-echo ""
-read -p "Nextcloud DB-Password: " NEXTCLOUDDBPASSWORD
-echo ""
-echo "Your Nextcloud-DB password: "$NEXTCLOUDDBPASSWORD
-echo ""
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo ""
-###restart MariaDB server andconnect to MariaDB
-service mysql restart && mysql -uroot <<EOF
-###create Nextclouds DB and User
-CREATE DATABASE $NEXTCLOUDDBNAME CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-CREATE USER $NEXTCLOUDDBUSER@localhost identified by '$NEXTCLOUDDBPASSWORD';
-GRANT ALL PRIVILEGES on $NEXTCLOUDDBNAME.* to $NEXTCLOUDDBUSER@localhost;
+/usr/sbin/service mysql restart && mysql -uroot -p  <<EOF
+CREATE DATABASE nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE USER nextcloud@localhost identified by 'nextcloud';
+GRANT ALL PRIVILEGES on nextcloud.* to nextcloud@localhost;
 FLUSH privileges;
 EOF
+echo ""
+echo " Your database server will now be hardened - just follow the instructions."
+echo ""
 ###harden your MariDB server
 mysql_secure_installation
 update_and_clean
@@ -547,9 +535,9 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echo "Nextcloud-Administrator and password - Attention: password is case-sensitive:"
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
-echo "Your Nextcloud-DB user: "$NEXTCLOUDDBUSER
+echo "Your Nextcloud-DB user: nextcloud"
 echo ""
-echo "Your Nextcloud-DB password: "$NEXTCLOUDDBPASSWORD
+echo "Your Nextcloud-DB password: nextcloud"
 echo ""
 read -p "Enter your Nextcloud Administrator: " NEXTCLOUDADMINUSER
 echo "Your Nextcloud Administrator: "$NEXTCLOUDADMINUSER
@@ -561,7 +549,7 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echo ""
 echo "Your NEXTCLOUD will now be installed silently - please be patient ..."
 echo ""
-sudo -u www-data php /var/www/nextcloud/occ maintenance:install --database "mysql" --database-name "$NEXTCLOUDDBNAME"  --database-user "$NEXTCLOUDDBUSER" --database-pass "$NEXTCLOUDDBPASSWORD" --admin-user "$NEXTCLOUDADMINUSER" --admin-pass "$NEXTCLOUDADMINUSERPASSWORD" --data-dir "/var/nc_data"
+sudo -u www-data php /var/www/nextcloud/occ maintenance:install --database "mysql" --database-name "nextcloud"  --database-user "nextcloud" --database-pass "nextcloud" --admin-user "$NEXTCLOUDADMINUSER" --admin-pass "$NEXTCLOUDADMINUSERPASSWORD" --data-dir "/var/nc_data"
 declare -l YOURSERVERNAME
 ###read and store the current hostname in lowercases
 YOURSERVERNAME=$(hostname)
