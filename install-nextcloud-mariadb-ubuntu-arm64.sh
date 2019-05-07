@@ -2,7 +2,7 @@
 # Carsten Rieger IT-Services
 # https://www.c-rieger.de
 # https://github.com/riegercloud
-# install-nextcloud-mariadb-ubuntu-arm64.sh
+# INSTALL-NEXTCLOUD-MARIADB-UBUNTU-ARM64.SH
 # Version ARM64
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.12, PHP7.3
