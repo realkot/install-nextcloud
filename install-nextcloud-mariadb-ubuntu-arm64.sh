@@ -194,6 +194,13 @@ mount -a
 service php7.3-fpm restart
 service nginx restart
 ###install MariaDB
+clear
+echo ""
+echo " DATABASE SERVER INSTALLATION"
+echo " Enter a MariaDB root password if requested - the script will fail if you won't!"
+echo ""
+echo " Press <Enter> to start the installation:"
+read
 apt update && apt install mariadb-server -y
 /usr/sbin/service mysql stop
 ###configure MariaDB
