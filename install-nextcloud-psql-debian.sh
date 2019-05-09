@@ -66,7 +66,7 @@ apt install lsb-release ca-certificates software-properties-common zip unzip scr
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 update_and_clean
-apt install nginx -y
+apt install nginx nginx-extras -y
 ###enable NGINX autostart
 systemctl enable nginx.service
 ### prepare the NGINX
@@ -315,6 +315,14 @@ deny all;
 }
 location ~ ^/(?:\.|autotest|occ|issue|indie|db_|console) {
 deny all;
+}
+location ~ \.(?:flv|mp4|mov|m4a)$ {
+mp4;
+mp4_buffer_size 100M;
+mp4_max_buffer_size 1024M;
+fastcgi_split_path_info ^(.+\.php)(/.*)$;
+include fastcgi_params; include php_optimization.conf;
+fastcgi_pass php-handler; fastcgi_param HTTPS on;
 }
 location ~ ^/(?:index|remote|public|cron|core/ajax/update|status|ocs/v[12]|updater/.+|ocs-provider/.+)\.php(?:\$|/) {
 fastcgi_split_path_info ^(.+\.php)(/.*)\$;
