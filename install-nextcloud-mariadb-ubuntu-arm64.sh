@@ -5,7 +5,7 @@
 # INSTALL-NEXTCLOUD-MARIADB-UBUNTU-ARM64.SH
 # Version ARM64
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.12, PHP7.3
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.9, PHP7.3
 ################################################
 # Ubuntu 18.04 LTS ARM64 - Nextcloud 16
 ################################################
@@ -49,8 +49,7 @@ ufw status verbose
 cd /usr/local/src
 ###prepare the server environment
 apt install gnupg2 wget -y
-sed -i '$adeb [arch=arm64] http://nginx.org/packages/mainline/ubuntu/ bionic nginx' /etc/apt/sources.list
-sed -i '$adeb-src [arch=arm64] http://nginx.org/packages/mainline/ubuntu/ bionic nginx' /etc/apt/sources.list
+sed -i '$adeb http://ppa.launchpad.net/ondrej/nginx-mainline/ubuntu bionic main' /etc/apt/sources.list
 sed -i '$adeb [arch=arm64] http://ftp.hosteurope.de/mirror/mariadb.org/repo/10.3/ubuntu bionic main' /etc/apt/sources.list
 sed -i '$adeb http://ppa.launchpad.net/ondrej/php/ubuntu bionic main' /etc/apt/sources.list
 wget http://nginx.org/keys/nginx_signing.key && apt-key add nginx_signing.key
@@ -60,20 +59,7 @@ update_and_clean
 apt install software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl -y
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 update_and_clean
-###instal NGINX using TLSv1.3, OpenSSL 1.1.1
-mkdir /usr/local/src/nginx && cd /usr/local/src/nginx/
-apt install dpkg-dev -y && apt source nginx
-cd /usr/local/src && apt install git -y
-git clone https://github.com/openssl/openssl.git
-cd openssl && git checkout OpenSSL_1_1_1-stable
-cp /usr/local/src/install-nextcloud/maintainance/rules.nginx /usr/local/src/nginx/nginx-$NGINXVER/debian/rules
-sed -i "s/.*-Werror.*/# &/" /usr/local/src/nginx/nginx-$NGINXVER/auto/cc/gcc
-cd /usr/local/src/nginx/nginx-$NGINXVER/
-apt build-dep nginx -y && dpkg-buildpackage -b
-cd /usr/local/src/nginx/
-dpkg -i nginx_$NGINXVER-*.deb
-service nginx restart && apt-mark hold nginx
-# apt install nginx -y
+apt install nginx -y
 ###enable NGINX autostart
 systemctl enable nginx.service
 ### prepare the NGINX
