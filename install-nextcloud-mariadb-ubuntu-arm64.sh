@@ -59,7 +59,7 @@ update_and_clean
 apt install software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl -y
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 update_and_clean
-apt install nginx -y
+apt install nginx nginx-extras -y
 ###enable NGINX autostart
 systemctl enable nginx.service
 ### prepare the NGINX
