@@ -61,7 +61,7 @@ apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 4F4EA0AAE5267A
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 update_and_clean
-apt install software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl -y
+apt install software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl locales-all -y
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 update_and_clean
