@@ -545,7 +545,7 @@ sudo -u www-data php /var/www/nextcloud/occ background:cron
 sed -i '/);/d' /var/www/nextcloud/config/config.php
 cat <<EOF >>/var/www/nextcloud/config/config.php
 'activity_expire_days' => 14,
-'auth.bruteforce.protection.enabled' => false,
+'auth.bruteforce.protection.enabled' => true,
 'blacklisted_files' =>
 array (
 0 => '.htaccess',
@@ -572,8 +572,9 @@ array (
 'htaccess.RewriteBase' => '/',
 'integrity.check.disabled' => false,
 'knowledgebaseenabled' => false,
-'logtimezone' => 'Europe/Berlin',
 'log_rotate_size' => 104857600,
+'logfile' => '/var/nc_data/nextcloud.log',
+'logtimezone' => 'Europe/Berlin',
 'memcache.local' => '\\OC\\Memcache\\APCu',
 'memcache.locking' => '\\OC\\Memcache\\Redis',
 'preview_max_x' => 1024,
