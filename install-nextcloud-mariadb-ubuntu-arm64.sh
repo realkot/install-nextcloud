@@ -10,8 +10,6 @@
 # Ubuntu 18.04 LTS ARM64 - Nextcloud 16
 ################################################
 #!/bin/bash
-### Set current NGINX Releaseversion
-NGINXVER="1.15.12"
 ###global function to update and cleanup the environment
 function update_and_clean() {
 apt update
@@ -493,7 +491,7 @@ EOF
 sed -i s/\#\include/\include/g /etc/nginx/nginx.conf
 sed -i "s/server_name YOUR.DEDYN.IO;/server_name $(hostname);/" /etc/nginx/conf.d/nextcloud.conf
 ###create Nextclouds cronjob
-(crontab -u www-data -l ; echo "*/15 * * * * php -f /var/www/nextcloud/cron.php > /dev/null 2>&1") | crontab -u www-data -
+(crontab -u www-data -l ; echo "*/5 * * * * php -f /var/www/nextcloud/cron.php > /dev/null 2>&1") | crontab -u www-data -
 ###restart NGINX
 service nginx restart
 ###Download Nextclouds latest release and extract it
