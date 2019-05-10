@@ -54,7 +54,7 @@ wget http://nginx.org/keys/nginx_signing.key && apt-key add nginx_signing.key
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 4F4EA0AAE5267A6C
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
 update_and_clean
-apt install software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl -y
+apt install software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl htop tree -y
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 update_and_clean
 apt install nginx nginx-extras -y
