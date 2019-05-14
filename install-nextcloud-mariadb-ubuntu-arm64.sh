@@ -495,12 +495,11 @@ sed -i "s/server_name YOUR.DEDYN.IO;/server_name $(hostname);/" /etc/nginx/conf.
 ###restart NGINX
 service nginx restart
 ###Download Nextclouds latest release and extract it
-# wget https://download.nextcloud.com/server/releases/latest.tar.bz2 (CURRENTLY NOT AS LATEST AVAILABLE!)
-wget https://download.nextcloud.com/server/releases/nextcloud-16.0.0.tar.bz2
-tar -xjf nextcloud-*.tar.bz2 -C /var/www
+wget https://download.nextcloud.com/server/releases/latest.tar.bz2
+tar -xjf latest.tar.bz2 -C /var/www
 ###apply permissions
 chown -R www-data:www-data /var/www/
-rm -f nextcloud-*.tar.bz2
+rm -f latest.tar.bz2
 update_and_clean
 restart_all_services
 clear
