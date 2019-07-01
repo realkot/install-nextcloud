@@ -5,7 +5,7 @@
 # INSTALL-NEXTCLOUD-MARIADB-DEBIAN.SH
 # Version 7 (AMD64)
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3, MariaDB
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP 7.3, MariaDB
 # July, 01st 2019
 #########################################################
 # Debian Stretch 9.x AMD64 - Nextcloud 16
@@ -266,7 +266,7 @@ sed -i s/\#\ unixsocket/\unixsocket/g /etc/redis/redis.conf
 sed -i "s/unixsocketperm 700/unixsocketperm 770/" /etc/redis/redis.conf
 sed -i "s/# maxclients 10000/maxclients 512/" /etc/redis/redis.conf
 usermod -a -G redis www-data
-cp /etc/sysctl.conf /etc/sysctl.conf.bak && sed -i '\$avm.overcommit_memory = 1' /etc/sysctl.conf
+cp /etc/sysctl.conf /etc/sysctl.conf.bak && sed -i '$avm.overcommit_memory = 1' /etc/sysctl.conf
 ###install self signed certificates
 apt install ssl-cert -y
 ###prepare NGINX for Nextcloud and SSL
