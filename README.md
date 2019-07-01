@@ -12,7 +12,7 @@ The scripts called install-nextcloud-<database>-debian.sh and install-nextcloud-
     Fail2Ban (Nextcloud and SSH jails)
     MariaDB 10.3 / PostgreSQL 11.x
     Nextcloud 16
-    NGINX 1.15
+    NGINX 1.17
     TLS v. 1.3
     PHP 7.3
     Redis-Server
