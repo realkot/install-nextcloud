@@ -5,7 +5,7 @@
 # INSTALL-NEXTCLOUD-PSQL-UBUNTU.SH
 # Version 2.0 (AMD64)
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3, PSQL
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17.x, PHP 7.3, PSQL
 # July, 02nd 2019
 #########################################################
 # Ubuntu Bionic Beaver 18.04.x AMD64 - Nextcloud 16
