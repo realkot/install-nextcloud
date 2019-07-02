@@ -15,13 +15,13 @@ The scripts called install-nextcloud-<database>-debian.sh and install-nextcloud-
     Nextcloud 16.x
     NGINX 1.17.x
     TLS v. 1.3
-    PHP 7.3
+    PHP 7.3.x
     Redis-Server
-    self signed or Let’s Encrypt SSL using the second script
+    self signed or Let’s Encrypt SSL (acme.sh)
     UFW (22, 80, 443)
 
 Ready to go (?) … let’s start.
 
-Carsten Rieger // https://www.c-rieger.de
+Carsten Rieger: https://www.c-rieger.de
 
 PayPal.ME: https://www.paypal.me/criegerde
