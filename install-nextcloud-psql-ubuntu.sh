@@ -3,10 +3,10 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-PSQL-UBUNTU.SH
-# Version 1.0 (AMD64)
+# Version 2.0 (AMD64)
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3, PSQL
-# May, 06h 2019
+# July, 02nd 2019
 #########################################################
 # Ubuntu Bionic Beaver 18.04.x AMD64 - Nextcloud 16
 #########################################################
@@ -23,18 +23,6 @@ function restart_all_services() {
 /usr/sbin/service nginx restart
 /usr/sbin/service postgresql restart
 /usr/sbin/service redis-server restart
-/usr/sbin/service php7.3-fpm restart
-}
-###global function to solve php-imagickexception as decribed here: https://www.c-rieger.de/solution-for-imagickexception-in-nextcloud-log
-function phpimagickexception() {
-/usr/sbin/service nginx stop
-/usr/sbin/service php7.3-fpm stop
-cp /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.bak
-sed -i "s/rights\=\"none\" pattern\=\"PS\"/rights\=\"read\|write\" pattern\=\"PS\"/" /etc/ImageMagick-6/policy.xml
-sed -i "s/rights\=\"none\" pattern\=\"EPI\"/rights\=\"read\|write\" pattern\=\"EPI\"/" /etc/ImageMagick-6/policy.xml
-sed -i "s/rights\=\"none\" pattern\=\"PDF\"/rights\=\"read\|write\" pattern\=\"PDF\"/" /etc/ImageMagick-6/policy.xml
-sed -i "s/rights\=\"none\" pattern\=\"XPS\"/rights\=\"read\|write\" pattern\=\"XPS\"/" /etc/ImageMagick-6/policy.xml
-/usr/sbin/service nginx restart
 /usr/sbin/service php7.3-fpm restart
 }
 ###global function to scan Nextcloud data and generate an overview for fail2ban & ufw
@@ -61,7 +49,7 @@ apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 4F4EA0AAE5267A
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 update_and_clean
-apt install software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl locales-all -y
+apt install software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl locales-all locate ghostscript -y
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 update_and_clean
@@ -73,7 +61,6 @@ mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak && touch /etc/nginx/nginx.con
 cat <<EOF >/etc/nginx/nginx.conf
 user www-data;
 worker_processes auto;
-error_log /var/log/nginx/error.log warn;
 pid /var/run/nginx.pid;
 events {
 worker_connections 1024;
@@ -91,8 +78,8 @@ include /etc/nginx/mime.types;
 #include /etc/nginx/header.conf;
 #include /etc/nginx/optimization.conf;
 default_type application/octet-stream;
-log_format main '\$remote_addr - \$remote_user [\$time_local] "\$request" \$status \$body_bytes_sent "\$http_referer" "\$http_user_agent" "\$http_x_forwarded_for" "\$host" sn="\$server_name" rt=\$request_time ua="\$upstream_addr" us="\$upstream_status" ut="\$upstream_response_time" ul="\$upstream_response_length" cs=\$upstream_cache_status' ;
-access_log /var/log/nginx/access.log main;
+access_log /var/log/nginx/access.log;
+error_log /var/log/nginx/error.log warn;
 sendfile on;
 send_timeout 3600;
 tcp_nopush on;
@@ -110,44 +97,38 @@ EOF
 ###restart NGINX
 /usr/sbin/service nginx restart
 ###create folders
-mkdir -p /var/nc_data /var/www/letsencrypt /usr/local/tmp/sessions /usr/local/tmp/apc
+mkdir -p /var/nc_data /var/www/letsencrypt /etc/letsencrypt/rsa-certs /etc/letsencrypt/ecc-certs
 ###apply permissions
 chown -R www-data:www-data /var/nc_data /var/www
-chown -R www-data:root /usr/local/tmp/sessions /usr/local/tmp/apc
 ###install PHP
 apt install php7.3-fpm php7.3-gd php7.3-pgsql php7.3-curl php7.3-xml php7.3-zip php7.3-intl php7.3-mbstring php7.3-json php7.3-bz2 php7.3-ldap php-apcu imagemagick php-imagick -y
-###adjust PHP
+###install PHP - Backup default files
+apt install php7.3-fpm php7.3-gd php7.3-mysql php7.3-curl php7.3-xml php7.3-zip php7.3-intl php7.3-mbstring php7.3-json php7.3-bz2 php7.3-ldap php-apcu imagemagick php-imagick -y
 cp /etc/php/7.3/fpm/pool.d/www.conf /etc/php/7.3/fpm/pool.d/www.conf.bak
 cp /etc/php/7.3/cli/php.ini /etc/php/7.3/cli/php.ini.bak
 cp /etc/php/7.3/fpm/php.ini /etc/php/7.3/fpm/php.ini.bak
 cp /etc/php/7.3/fpm/php-fpm.conf /etc/php/7.3/fpm/php-fpm.conf.bak
+cp /etc/ImageMagick-6/policy.xml /etc/ImageMagick-6/policy.xml.bak
+###PHP Mods: www.conf
 sed -i "s/;env\[HOSTNAME\] = /env[HOSTNAME] = /" /etc/php/7.3/fpm/pool.d/www.conf
 sed -i "s/;env\[TMP\] = /env[TMP] = /" /etc/php/7.3/fpm/pool.d/www.conf
 sed -i "s/;env\[TMPDIR\] = /env[TMPDIR] = /" /etc/php/7.3/fpm/pool.d/www.conf
 sed -i "s/;env\[TEMP\] = /env[TEMP] = /" /etc/php/7.3/fpm/pool.d/www.conf
 sed -i "s/;env\[PATH\] = /env[PATH] = /" /etc/php/7.3/fpm/pool.d/www.conf
-sed -i "s/pm.max_children = .*/pm.max_children = 240/" /etc/php/7.3/fpm/pool.d/www.conf
-sed -i "s/pm.start_servers = .*/pm.start_servers = 20/" /etc/php/7.3/fpm/pool.d/www.conf
-sed -i "s/pm.min_spare_servers = .*/pm.min_spare_servers = 10/" /etc/php/7.3/fpm/pool.d/www.conf
-sed -i "s/pm.max_spare_servers = .*/pm.max_spare_servers = 20/" /etc/php/7.3/fpm/pool.d/www.conf
-sed -i "s/;pm.max_requests = 500/pm.max_requests = 500/" /etc/php/7.3/fpm/pool.d/www.conf
+###PHP Mods: cli/php.ini
 sed -i "s/output_buffering =.*/output_buffering = 'Off'/" /etc/php/7.3/cli/php.ini
-sed -i "s/max_execution_time =.*/max_execution_time = 1800/" /etc/php/7.3/cli/php.ini
+sed -i "s/max_execution_time =.*/max_execution_time = 3600/" /etc/php/7.3/cli/php.ini
 sed -i "s/max_input_time =.*/max_input_time = 3600/" /etc/php/7.3/cli/php.ini
 sed -i "s/post_max_size =.*/post_max_size = 10240M/" /etc/php/7.3/cli/php.ini
 sed -i "s/upload_max_filesize =.*/upload_max_filesize = 10240M/" /etc/php/7.3/cli/php.ini
-sed -i "s/max_file_uploads =.*/max_file_uploads = 100/" /etc/php/7.3/cli/php.ini
 sed -i "s/;date.timezone.*/date.timezone = Europe\/\Berlin/" /etc/php/7.3/cli/php.ini
-sed -i "s/;session.cookie_secure.*/session.cookie_secure = True/" /etc/php/7.3/cli/php.ini
-sed -i "s/;session.save_path =.*/session.save_path = \"N;700;\/usr\/local\/tmp\/sessions\"/" /etc/php/7.3/cli/php.ini
-sed -i '$aapc.enable_cli = 1' /etc/php/7.3/cli/php.ini
+###PHP Mods: fpm/php.ini
 sed -i "s/memory_limit = 128M/memory_limit = 512M/" /etc/php/7.3/fpm/php.ini
 sed -i "s/output_buffering =.*/output_buffering = 'Off'/" /etc/php/7.3/fpm/php.ini
-sed -i "s/max_execution_time =.*/max_execution_time = 1800/" /etc/php/7.3/fpm/php.ini
+sed -i "s/max_execution_time =.*/max_execution_time = 3600/" /etc/php/7.3/fpm/php.ini
 sed -i "s/max_input_time =.*/max_input_time = 3600/" /etc/php/7.3/fpm/php.ini
 sed -i "s/post_max_size =.*/post_max_size = 10240M/" /etc/php/7.3/fpm/php.ini
 sed -i "s/upload_max_filesize =.*/upload_max_filesize = 10240M/" /etc/php/7.3/fpm/php.ini
-sed -i "s/max_file_uploads =.*/max_file_uploads = 100/" /etc/php/7.3/fpm/php.ini
 sed -i "s/;date.timezone.*/date.timezone = Europe\/\Berlin/" /etc/php/7.3/fpm/php.ini
 sed -i "s/;session.cookie_secure.*/session.cookie_secure = True/" /etc/php/7.3/fpm/php.ini
 sed -i "s/;opcache.enable=.*/opcache.enable=1/" /etc/php/7.3/fpm/php.ini
@@ -157,44 +138,12 @@ sed -i "s/;opcache.interned_strings_buffer=.*/opcache.interned_strings_buffer=8/
 sed -i "s/;opcache.max_accelerated_files=.*/opcache.max_accelerated_files=10000/" /etc/php/7.3/fpm/php.ini
 sed -i "s/;opcache.revalidate_freq=.*/opcache.revalidate_freq=1/" /etc/php/7.3/fpm/php.ini
 sed -i "s/;opcache.save_comments=.*/opcache.save_comments=1/" /etc/php/7.3/fpm/php.ini
-sed -i "s/;session.save_path =.*/session.save_path = \"N;700;\/usr\/local\/tmp\/sessions\"/" /etc/php/7.3/fpm/php.ini
-sed -i "s/;emergency_restart_threshold =.*/emergency_restart_threshold = 10/" /etc/php/7.3/fpm/php-fpm.conf
-sed -i "s/;emergency_restart_interval =.*/emergency_restart_interval = 1m/" /etc/php/7.3/fpm/php-fpm.conf
-sed -i "s/;process_control_timeout =.*/process_control_timeout = 10s/" /etc/php/7.3/fpm/php-fpm.conf
-sed -i '$aapc.enabled=1' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.file_update_protection=2' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.optimization=0' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.shm_size=256M' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.include_once_override=0' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.shm_segments=1' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.ttl=7200' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.user_ttl=7200' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.gc_ttl=3600' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.num_files_hint=1024' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.enable_cli=0' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.max_file_size=5M' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.cache_by_default=1' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.use_request_time=1' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.slam_defense=0' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.mmap_file_mask=/usr/local/tmp/apc/apc.XXXXXX' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.stat_ctime=0' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.canonicalize=1' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.write_lock=1' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.report_autofilter=0' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.rfc1867=0' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.rfc1867_prefix =upload_' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.rfc1867_name=APC_UPLOAD_PROGRESS' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.rfc1867_freq=0' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.rfc1867_ttl=3600' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.lazy_classes=0' /etc/php/7.3/fpm/php.ini
-sed -i '$aapc.lazy_functions=0' /etc/php/7.3/fpm/php.ini
-sed -i "s/09,39.*/# &/" /etc/cron.d/php
-(crontab -l ; echo "09,39 * * * * /usr/lib/php/sessionclean 2>&1") | crontab -u root -
-###edit fstab to make use of tmpfs
-sed -i '$atmpfs /usr/local/tmp/apc tmpfs defaults,uid=33,size=300M,noatime,nosuid,nodev,noexec,mode=1777 0 0' /etc/fstab
-sed -i '$atmpfs /usr/local/tmp/sessions tmpfs defaults,uid=33,size=300M,noatime,nosuid,nodev,noexec,mode=1777 0 0' /etc/fstab
-###make use of tmpfs
-mount -a
+### Solve ImageMagick errors
+sed -i "s/rights=\"none\" pattern=\"PS\"/rights=\"read|write\" pattern=\"PS\"/" /etc/ImageMagick-6/policy.xml
+sed -i "s/rights=\"none\" pattern=\"EPI\"/rights=\"read|write\" pattern=\"EPI\"/" /etc/ImageMagick-6/policy.xml
+sed -i "s/rights=\"none\" pattern=\"PDF\"/rights=\"read|write\" pattern=\"PDF\"/" /etc/ImageMagick-6/policy.xml
+sed -i "s/rights=\"none\" pattern=\"XPS\"/rights=\"read|write\" pattern=\"XPS\"/" /etc/ImageMagick-6/policy.xml
+ln -s /usr/local/bin/gs /usr/bin/gs
 ###restart PHP and NGINX
 /usr/sbin/service php7.3-fpm restart
 /usr/sbin/service nginx restart
@@ -276,6 +225,7 @@ cat <<EOF >/etc/nginx/conf.d/nextcloud.conf
 server {
 server_name YOUR.DEDYN.IO;
 listen 80 default_server;
+listen [::]:80 default_server;
 location ^~ /.well-known/acme-challenge {
 proxy_pass http://127.0.0.1:81;
 proxy_set_header Host \$host;
@@ -287,9 +237,8 @@ return 301 https://\$host\$request_uri;
 server {
 server_name YOUR.DEDYN.IO;
 listen 443 ssl http2 default_server;
+listen [::]:443 ssl http2 default_server;
 root /var/www/nextcloud/;
-access_log /var/log/nginx/nextcloud.access.log main;
-error_log /var/log/nginx/nextcloud.error.log warn;
 location = /robots.txt {
 allow all;
 log_not_found off;
@@ -301,8 +250,9 @@ return 301 \$scheme://\$host/remote.php/dav;
 location = /.well-known/caldav {
 return 301 \$scheme://\$host/remote.php/dav;
 }
-#SOCIAL app enabled? Please uncomment the following three rows
+#SOCIAL app enabled? Please uncomment the following row
 #rewrite ^/.well-known/webfinger /public.php?service=webfinger last;
+#WEBFINGER app enabled? Please uncomment the following two rows.
 #rewrite ^/.well-known/host-meta /public.php?service=host-meta last;
 #rewrite ^/.well-known/host-meta.json /public.php?service=host-meta-json last;
 client_max_body_size 10240M;
@@ -315,26 +265,26 @@ deny all;
 location ~ ^/(?:\.|autotest|occ|issue|indie|db_|console) {
 deny all;
 }
-location ~ \.(?:flv|mp4|mov|m4a)$ {
+location ~ \.(?:flv|mp4|mov|m4a)\$ {
 mp4;
 mp4_buffer_size 100M;
 mp4_max_buffer_size 1024M;
-fastcgi_split_path_info ^(.+\.php)(/.*)$;
+fastcgi_split_path_info ^(.+?.php)(\/.*|)\$;
 include fastcgi_params; include php_optimization.conf;
 fastcgi_pass php-handler; fastcgi_param HTTPS on;
 }
-location ~ ^/(?:index|remote|public|cron|core/ajax/update|status|ocs/v[12]|updater/.+|ocs-provider/.+)\.php(?:\$|/) {
-fastcgi_split_path_info ^(.+\.php)(/.*)\$;
+location ~ ^\/(?:index|remote|public|cron|core\/ajax\/update|status|ocs\/v[12]|updater\/.+|oc[ms]-provider\/.+).php(?:$|\/) {
+fastcgi_split_path_info ^(.+?.php)(\/.*|)\$;
 include fastcgi_params;
 include php_optimization.conf;
 fastcgi_pass php-handler;
 fastcgi_param HTTPS on;
 }
-location ~ ^/(?:updater|ocs-provider)(?:\$|/) {
+location ~ ^\/(?:updater|oc[ms]-provider)(?:\$|\/) {
 try_files \$uri/ =404;
 index index.php;
 }
-location ~ \.(?:css|js|woff2?|svg|gif|png|html|ttf|ico|jpg|jpeg)\$ {
+location ~ .(?:css|js|woff2?|svg|gif|map|png|html|ttf|ico|jpg|jpeg)\$ {
 try_files \$uri /index.php\$request_uri;
 access_log off;
 expires 360d;
@@ -344,13 +294,13 @@ EOF
 ###create a Let's Encrypt vhost file
 touch /etc/nginx/conf.d/letsencrypt.conf
 cat <<EOF >/etc/nginx/conf.d/letsencrypt.conf
-server {
+server
+{
 server_name 127.0.0.1;
 listen 127.0.0.1:81 default_server;
 charset utf-8;
-access_log /var/log/nginx/le.access.log main;
-error_log /var/log/nginx/le.error.log warn;
-location ^~ /.well-known/acme-challenge {
+location ^~ /.well-known/acme-challenge
+{
 default_type text/plain;
 root /var/www/letsencrypt;
 }
@@ -362,15 +312,15 @@ cat <<EOF >/etc/nginx/ssl.conf
 ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
 ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
 ssl_trusted_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
-#ssl_certificate /etc/letsencrypt/live/YOUR.DEDYN.IO/fullchain.pem;
-#ssl_certificate_key /etc/letsencrypt/live/YOUR.DEDYN.IO/privkey.pem;
-#ssl_trusted_certificate /etc/letsencrypt/live/YOUR.DEDYN.IO/chain.pem;
+#ssl_certificate /etc/letsencrypt/rsa-certs/fullchain.pem;
+#ssl_certificate_key /etc/letsencrypt/rsa-certs/privkey.pem;
+#ssl_certificate /etc/letsencrypt/ecc-certs/fullchain.pem;
+#ssl_certificate_key /etc/letsencrypt/ecc-certs/privkey.pem;
+#ssl_trusted_certificate /etc/letsencrypt/ecc-certs/chain.pem;
 ssl_dhparam /etc/ssl/certs/dhparam.pem;
-ssl_session_timeout 1d;
-ssl_session_cache shared:SSL:50m;
-ssl_session_tickets off;
-ssl_protocols TLSv1.3 TLSv1.2;
-ssl_ciphers 'TLS-CHACHA20-POLY1305-SHA256:TLS-AES-256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384'; #:ECDHE-RSA-AES256-SHA384';
+ssl_session_timeout 1d; ssl_session_cache shared:SSL:50m;
+ssl_session_tickets off; ssl_protocols TLSv1.3 TLSv1.2;
+ssl_ciphers 'TLS-CHACHA20-POLY1305-SHA256:TLS-AES-256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384';
 ssl_ecdh_curve X448:secp521r1:secp384r1:prime256v1;
 ssl_prefer_server_ciphers on;
 ssl_stapling on;
@@ -412,22 +362,23 @@ EOF
 touch /etc/nginx/header.conf
 cat <<EOF >/etc/nginx/header.conf
 add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; preload;";
-add_header X-Robots-Tag none;
-add_header X-Download-Options noopen;
+add_header X-Robots-Tag none; add_header X-Download-Options noopen;
 add_header X-Permitted-Cross-Domain-Policies none;
 add_header X-Content-Type-Options "nosniff" always;
 add_header X-XSS-Protection "1; mode=block" always;
 add_header Referrer-Policy "no-referrer" always;
-#add_header Feature-Policy "accelerometer 'none'; autoplay 'self'; geolocation 'none'; midi 'none'; sync-xhr 'self' ; microphone 'self'; camera 'self'; magnetometer 'none'; gyroscope 'none'; speaker 'self'; fullscreen 'self'; payment 'none'; usb 'none'";                                                                                   
 EOF
 ###create a nginx optimization file
 touch /etc/nginx/optimization.conf
 cat <<EOF >/etc/nginx/optimization.conf
+fastcgi_hide_header X-Powered-By;
 fastcgi_read_timeout 3600;
+fastcgi_send_timeout 3600;
+fastcgi_connect_timeout 3600;
 fastcgi_buffers 64 64K;
 fastcgi_buffer_size 256k;
 fastcgi_busy_buffers_size 3840K;
-fastcgi_cache_key \$http_cookie$request_method$host$request_uri;
+fastcgi_cache_key \$http_cookie\$request_method\$host\$request_uri;
 fastcgi_cache_use_stale error timeout invalid_header http_500;
 fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
 gzip on;
@@ -453,7 +404,6 @@ fastcgi_cache_methods GET HEAD;
 EOF
 ###enable all nginx configuration files
 sed -i s/\#\include/\include/g /etc/nginx/nginx.conf
-###enable all nginx configuration files
 sed -i "s/server_name YOUR.DEDYN.IO;/server_name $(hostname);/" /etc/nginx/conf.d/nextcloud.conf
 ###create Nextclouds cronjob
 (crontab -u www-data -l ; echo "*/5 * * * * php -f /var/www/nextcloud/cron.php > /dev/null 2>&1") | crontab -u www-data -
@@ -502,8 +452,6 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ###backup of the effected file .user.ini
 cp /var/www/nextcloud/.user.ini /usr/local/src/.user.ini.bak
 ###apply Nextcloud optimizations
-sudo -u www-data sed -i "s/upload_max_filesize=.*/upload_max_filesize=10240M/" /var/www/nextcloud/.user.ini
-sudo -u www-data sed -i "s/post_max_size=.*/post_max_size=10240M/" /var/www/nextcloud/.user.ini
 sudo -u www-data sed -i "s/output_buffering=.*/output_buffering='Off'/" /var/www/nextcloud/.user.ini
 chown -R www-data:www-data /var/www
 sudo -u www-data php /var/www/nextcloud/occ background:cron
@@ -624,8 +572,6 @@ echo "---------------------------------"
 echo ""
 sudo -u www-data php /var/www/nextcloud/occ db:add-missing-indices
 sudo -u www-data php /var/www/nextcloud/occ db:convert-filecache-bigint
-###solve an issue with phpimagick
-phpimagickexception
 ###rescan Nextcloud data
 nextcloud_scan_data
 restart_all_services
