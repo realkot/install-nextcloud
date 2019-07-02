@@ -5,8 +5,8 @@
 # INSTALL-NEXTCLOUD-MARIADB-UBUNTU.SH
 # Version 7 (AMD64)
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.15.x, PHP 7.3, MariaDB
-# July, 01st 2019
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP 7.3, MariaDB
+# July, 02nd 2019
 #########################################################
 # Ubuntu Bionic Beaver 18.04.x AMD64 - Nextcloud 16
 #########################################################
