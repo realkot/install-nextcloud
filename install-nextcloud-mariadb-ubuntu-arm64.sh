@@ -1,14 +1,15 @@
-################################################
+#########################################################
 # Carsten Rieger IT-Services
 # https://www.c-rieger.de
-# https://github.com/riegercloud
+# https://github.com/criegerde
 # INSTALL-NEXTCLOUD-MARIADB-UBUNTU-ARM64.SH
-# Version ARM64
+# Version 2 (ARM64)
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP7.3
-################################################
-# Ubuntu 18.04 LTS ARM64 - Nextcloud 16
-################################################
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP 7.3, MariaDB
+# July, 02nd 2019
+#########################################################
+# Ubuntu Bionic Beaver 18.04.x AMD64 - Nextcloud 16
+#########################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
 function update_and_clean() {
