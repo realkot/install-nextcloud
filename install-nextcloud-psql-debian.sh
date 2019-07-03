@@ -3,10 +3,10 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-PSQL-DEBIAN.SH
-# Version 2.0 (AMD64)
+# Version 3.0 (AMD64)
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.17.x, PHP 7.3, PSQL
-# July, 02nd 2019
+# July, 03rd 2019
 #########################################################
 # Debian Stretch 9.x AMD64 - Nextcloud 16
 #########################################################
@@ -98,9 +98,9 @@ EOF
 ###restart NGINX
 /usr/sbin/service nginx restart
 ###create folders
-mkdir -p /var/nc_data /var/www/letsencrypt /etc/letsencrypt/rsa-certs /etc/letsencrypt/ecc-certs
+mkdir -p /var/www/letsencrypt /etc/letsencrypt/rsa-certs /etc/letsencrypt/ecc-certs
 ###apply permissions
-chown -R www-data:www-data /var/nc_data /var/www
+chown -R www-data:www-data /var/www
 ###install PHP
 apt install php7.3-fpm php7.3-gd php7.3-pgsql php7.3-curl php7.3-xml php7.3-zip php7.3-intl php7.3-mbstring php7.3-json php7.3-bz2 php7.3-ldap php-apcu imagemagick php-imagick -y
 ###install PHP - Backup default files
@@ -435,6 +435,21 @@ echo ""
 read -p "Enter your Nextcloud Administrator password: " NEXTCLOUDADMINUSERPASSWORD
 echo "Your Nextcloud Administrator password: "$NEXTCLOUDADMINUSERPASSWORD
 echo ""
+while [[ $NEXTCLOUDDATAPATH == '' ]]
+do
+read -p "Enter your absolute Nextcloud datapath (/your/path): " NEXTCLOUDDATAPATH
+if [[ -z "$NEXTCLOUDDATAPATH" ]]; then
+echo "datapath must not be empty!"
+echo""
+else
+echo "Your Nextcloud datapath: "$NEXTCLOUDDATAPATH
+fi
+done
+if [[ ! -e $NEXTCLOUDDATAPATH ]];
+then
+  mkdir -p $NEXTCLOUDDATAPATH
+fi
+chown -R www-data:www-data $NEXTCLOUDDATAPATH
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
 echo "Your NEXTCLOUD will now be installed silently - please be patient ..."
@@ -489,7 +504,7 @@ array (
 'knowledgebaseenabled' => false,
 'logtimezone' => 'Europe/Berlin',
 'log_rotate_size' => 104857600,
-'logfile' => '/var/nc_data/nextcloud.log',
+'logfile' => '$NEXTCLOUDDATAPATH/nextcloud.log',
 'memcache.local' => '\\OC\\Memcache\\APCu',
 'memcache.locking' => '\\OC\\Memcache\\Redis',
 'preview_max_x' => 1024,
@@ -534,7 +549,7 @@ filter = nextcloud
 maxretry = 3
 bantime = 36000
 findtime = 36000
-logpath = /var/nc_data/nextcloud.log
+logpath = $NEXTCLOUDDATAPATH/nextcloud.log
 [nginx-http-auth]
 enabled = true
 EOF
@@ -582,18 +597,16 @@ clear
 echo ""
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
-echo " Open your browser and call your Nextcloud at:"
+echo " Open your browser and call your Nextcloud at"
 echo ""
 echo " https://$YOURSERVERNAME"
 echo ""
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo "*******************************************************************************"
+echo "Your Nextcloud DB data : nextcloud | nextcloud"
 echo ""
-echo " I do strongly recommend to enhance the server security by re-creating"
-echo " the dhparam.pem file:"
-echo ""
-echo " openssl dhparam -out /etc/ssl/certs/dhparam.pem 4096"
-echo ""
-echo " https://www.c-rieger.de/nextcloud-installation-guide-ubuntu/#dhparamfile"
+echo "Your Nextcloud User    : "$NEXTCLOUDADMINUSER
+echo "Your Nextcloud Password: "$NEXTCLOUDADMINUSERPASSWORD
+echo "Your Nextcloud datapath: "$NEXTCLOUDDATAPATH
 echo ""
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
