@@ -6,7 +6,7 @@
 # Version 7 (AMD64)
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP 7.3, MariaDB
-# July, 01st 2019
+# July, 03rd 2019
 #########################################################
 # Debian Stretch 9.x AMD64 - Nextcloud 16
 #########################################################
@@ -102,9 +102,9 @@ EOF
 ###restart NGINX
 /usr/sbin/service nginx restart
 ###create folders
-mkdir -p /var/nc_data /var/www/letsencrypt /etc/letsencrypt/rsa-certs /etc/letsencrypt/ecc-certs
+mkdir -p /var/www/letsencrypt /etc/letsencrypt/rsa-certs /etc/letsencrypt/ecc-certs
 ###apply permissions
-chown -R www-data:www-data /var/nc_data /var/www
+chown -R www-data:www-data /var/www
 ###install PHP - Backup default files
 apt install php7.3-fpm php7.3-gd php7.3-mysql php7.3-curl php7.3-xml php7.3-zip php7.3-intl php7.3-mbstring php7.3-json php7.3-bz2 php7.3-ldap php-apcu imagemagick php-imagick -y
 cp /etc/php/7.3/fpm/pool.d/www.conf /etc/php/7.3/fpm/pool.d/www.conf.bak
@@ -472,25 +472,40 @@ update_and_clean
 restart_all_services
 clear
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo " Nextcloud-Administrator and password - Attention: password is case-sensitive:"
+echo "Nextcloud-Administrator and password - Attention: password is case-sensitive:"
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
-echo " Your Nextcloud-DB user: nextcloud"
+echo "Your Nextcloud-DB user: nextcloud"
 echo ""
-echo " Your Nextcloud-DB password: nextcloud"
+echo "Your Nextcloud-DB password: nextcloud"
 echo ""
-read -p " Enter your Nextcloud Administrator: " NEXTCLOUDADMINUSER
-echo " Your Nextcloud Administrator: "$NEXTCLOUDADMINUSER
+read -p "Enter your Nextcloud Administrator: " NEXTCLOUDADMINUSER
+echo "Your Nextcloud Administrator: "$NEXTCLOUDADMINUSER
 echo ""
-read -p " Enter your Nextcloud Administrator password: " NEXTCLOUDADMINUSERPASSWORD
-echo " Your Nextcloud Administrator password: "$NEXTCLOUDADMINUSERPASSWORD
+read -p "Enter your Nextcloud Administrator password: " NEXTCLOUDADMINUSERPASSWORD
+echo "Your Nextcloud Administrator password: "$NEXTCLOUDADMINUSERPASSWORD
 echo ""
+while [[ $NEXTCLOUDDATAPATH == '' ]]
+do
+read -p "Enter your absolute Nextcloud datapath (/your/path): " NEXTCLOUDDATAPATH
+if [[ -z "$NEXTCLOUDDATAPATH" ]]; then
+echo "datapath must not be empty!"
+echo""
+else
+echo "Your Nextcloud datapath: "$NEXTCLOUDDATAPATH
+fi
+done
+if [[ ! -e $NEXTCLOUDDATAPATH ]];
+then
+  mkdir -p $NEXTCLOUDDATAPATH
+fi
+chown -R www-data:www-data $NEXTCLOUDDATAPATH
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
-echo " Your NEXTCLOUD will now be installed silently - please be patient ..."
+echo "Your NEXTCLOUD will now be installed silently - please be patient ..."
 echo ""
 ###NEXTCLOUD INSTALLATION
-su - www-data -s /bin/bash -c "php /var/www/nextcloud/occ maintenance:install --database mysql --database-name 'nextcloud' --database-user 'nextcloud' --database-pass 'nextcloud' --admin-user '$NEXTCLOUDADMINUSER' --admin-pass '$NEXTCLOUDADMINUSERPASSWORD' --data-dir '/var/nc_data'"
+su - www-data -s /bin/bash -c "php /var/www/nextcloud/occ maintenance:install --database mysql --database-name 'nextcloud' --database-user 'nextcloud' --database-pass 'nextcloud' --admin-user '$NEXTCLOUDADMINUSER' --admin-pass '$NEXTCLOUDADMINUSERPASSWORD' --data-dir '$NEXTCLOUDDATAPATH'"
 ###read and store the current hostname in lowercases
 declare -l YOURSERVERNAME
 YOURSERVERNAME=$(hostname)
@@ -538,7 +553,7 @@ array (
 'integrity.check.disabled' => false,
 'knowledgebaseenabled' => false,
 'log_rotate_size' => 104857600,
-'logfile' => '/var/nc_data/nextcloud.log',
+'logfile' => '$NEXTCLOUDDATAPATH/nextcloud.log',
 'logtimezone' => 'Europe/Berlin',								 
 'memcache.local' => '\\OC\\Memcache\\APCu',
 'memcache.locking' => '\\OC\\Memcache\\Redis',
@@ -584,7 +599,7 @@ filter = nextcloud
 maxretry = 5
 bantime = 3600
 findtime = 3600
-logpath = /var/nc_data/nextcloud.log
+logpath = $NEXTCLOUDDATAPATH/nextcloud.log
 [nginx-http-auth]
 enabled = true
 EOF
@@ -634,6 +649,13 @@ echo ""
 echo " Open your browser and call your Nextcloud at"
 echo ""
 echo " https://$YOURSERVERNAME"
+echo ""
+echo "*******************************************************************************"
+echo "Your Nextcloud DB data : user: nextcloud password: nextcloud"
+echo ""
+echo "Your Nextcloud User    : "$NEXTCLOUDADMINUSER
+echo "Your Nextcloud Password: "$NEXTCLOUDADMINUSERPASSWORD
+echo "Your Nextcloud datapath: "$NEXTCLOUDDATAPATH
 echo ""
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
