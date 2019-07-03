@@ -649,7 +649,7 @@ echo ""
 echo " https://$YOURSERVERNAME"
 echo ""
 echo "*******************************************************************************"
-echo "Your Nextcloud DB data : user: nextcloud password: nextcloud"
+echo "Your Nextcloud DB data : nextcloud | nextcloud"
 echo ""
 echo "Your Nextcloud User    : "$NEXTCLOUDADMINUSER
 echo "Your Nextcloud Password: "$NEXTCLOUDADMINUSERPASSWORD
