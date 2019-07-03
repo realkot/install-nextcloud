@@ -6,7 +6,7 @@
 # Version 2 (ARM64)
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP 7.3, MariaDB
-# July, 02nd 2019
+# July, 03rd 2019
 #########################################################
 # Ubuntu Bionic Beaver 18.04.x AMD64 - Nextcloud 16
 #########################################################
@@ -94,9 +94,9 @@ EOF
 ###restart NGINX
 /usr/sbin/service nginx restart
 ###create folders
-mkdir -p /var/nc_data /var/www/letsencrypt /etc/letsencrypt/rsa-certs /etc/letsencrypt/ecc-certs 
+mkdir -p /var/www/letsencrypt /etc/letsencrypt/rsa-certs /etc/letsencrypt/ecc-certs 
 ###apply permissions
-chown -R www-data:www-data /var/nc_data /var/www
+chown -R www-data:www-data /var/www
 ###install PHP - Backup default files
 apt install php7.3-fpm php7.3-gd php7.3-mysql php7.3-curl php7.3-xml php7.3-zip php7.3-intl php7.3-mbstring php7.3-json php7.3-bz2 php7.3-ldap php-apcu imagemagick php-imagick -y
 cp /etc/php/7.3/fpm/pool.d/www.conf /etc/php/7.3/fpm/pool.d/www.conf.bak
@@ -477,11 +477,27 @@ echo ""
 read -p "Enter your Nextcloud Administrator password: " NEXTCLOUDADMINUSERPASSWORD
 echo "Your Nextcloud Administrator password: "$NEXTCLOUDADMINUSERPASSWORD
 echo ""
+while [[ $NEXTCLOUDDATAPATH == '' ]]
+do
+read -p "Enter your absolute Nextcloud datapath (/your/path): " NEXTCLOUDDATAPATH
+if [[ -z "$NEXTCLOUDDATAPATH" ]]; then
+echo "datapath must not be empty!"
+echo""
+else
+echo "Your Nextcloud datapath: "$NEXTCLOUDDATAPATH
+fi
+done
+if [[ ! -e $NEXTCLOUDDATAPATH ]];
+then
+  mkdir -p $NEXTCLOUDDATAPATH
+fi
+chown -R www-data:www-data $NEXTCLOUDDATAPATH
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
 echo "Your NEXTCLOUD will now be installed silently - please be patient ..."
 echo ""
-sudo -u www-data php /var/www/nextcloud/occ maintenance:install --database "mysql" --database-name "nextcloud"  --database-user "nextcloud" --database-pass "nextcloud" --admin-user "$NEXTCLOUDADMINUSER" --admin-pass "$NEXTCLOUDADMINUSERPASSWORD" --data-dir "/var/nc_data"
+###NEXTCLOUD INSTALLATION
+sudo -u www-data php /var/www/nextcloud/occ maintenance:install --database "mysql" --database-name "nextcloud"  --database-user "nextcloud" --database-pass "nextcloud" --admin-user "$NEXTCLOUDADMINUSER" --admin-pass "$NEXTCLOUDADMINUSERPASSWORD" --data-dir "$NEXTCLOUDDATAPATH"
 declare -l YOURSERVERNAME
 ###read and store the current hostname in lowercases
 YOURSERVERNAME=$(hostname)
@@ -528,7 +544,7 @@ array (
 'integrity.check.disabled' => false,
 'knowledgebaseenabled' => false,
 'log_rotate_size' => 104857600,
-'logfile' => '/var/nc_data/nextcloud.log',
+'logfile' => '$NEXTCLOUDDATAPATH/nextcloud.log',
 'logtimezone' => 'Europe/Berlin',
 'memcache.local' => '\\OC\\Memcache\\APCu',
 'memcache.locking' => '\\OC\\Memcache\\Redis',
@@ -573,7 +589,7 @@ filter = nextcloud
 maxretry = 5
 bantime = 3600
 findtime = 3600
-logpath = /var/nc_data/nextcloud.log
+logpath = $NEXTCLOUDDATAPATH/nextcloud.log
 [nginx-http-auth]
 enabled = true
 EOF
@@ -623,14 +639,12 @@ echo " Open your browser and call your Nextcloud at"
 echo ""
 echo " https://$YOURSERVERNAME"
 echo ""
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo "*******************************************************************************"
+echo "Your Nextcloud DB data : nextcloud | nextcloud"
 echo ""
-echo " I do strongly recommend to enhance the server security by re-creating"
-echo " the dhparam.pem file:"
-echo ""
-echo " openssl dhparam -out /etc/ssl/certs/dhparam.pem 4096"
-echo ""
-echo " https://www.c-rieger.de/nextcloud-installation-guide-ubuntu/#dhparamfile"
+echo "Your Nextcloud User    : "$NEXTCLOUDADMINUSER
+echo "Your Nextcloud Password: "$NEXTCLOUDADMINUSERPASSWORD
+echo "Your Nextcloud datapath: "$NEXTCLOUDDATAPATH
 echo ""
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
