@@ -33,19 +33,13 @@ fail2ban-client status nextcloud
 ufw status verbose
 }
 ### START ###
-cd /usr/local/src
-###prepare the server environment
 apt install gnupg2 wget -y
-mv /etc/apt/sources.list /etc/apt/sources.list.bak && touch /etc/apt/sources.list
-cat <<EOF >>/etc/apt/sources.list
-deb http://archive.ubuntu.com/ubuntu bionic main multiverse restricted universe
-deb http://archive.ubuntu.com/ubuntu bionic-security main multiverse restricted universe
-deb http://archive.ubuntu.com/ubuntu bionic-updates main multiverse restricted universe
-deb [arch=amd64] http://ppa.launchpad.net/ondrej/php/ubuntu bionic main
-deb [arch=amd64] http://ppa.launchpad.net/ondrej/nginx-mainline/ubuntu bionic main
-deb [arch=amd64] http://ftp.hosteurope.de/mirror/mariadb.org/repo/10.4/ubuntu bionic main
-EOF
 ###prepare the server environment
+cd /etc/apt/sources.list.d
+echo "deb [arch=amd64] http://ppa.launchpad.net/ondrej/php/ubuntu $(lsb_release -cs) main" | tee php.list
+echo "deb [arch=amd64] http://ppa.launchpad.net/ondrej/nginx-mainline/ubuntu $(lsb_release -cs) main" | tee nginx.list
+echo "deb [arch=amd64] http://ftp.hosteurope.de/mirror/mariadb.org/repo/10.4/ubuntu $(lsb_release -cs) main" | tee mariadb.list
+###
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 4F4EA0AAE5267A6C
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8   
 update_and_clean
@@ -150,13 +144,13 @@ ln -s /usr/local/bin/gs /usr/bin/gs
 /usr/sbin/service php7.3-fpm restart
 /usr/sbin/service nginx restart
 ###install MariaDB
-clear
-echo ""
-echo " DATABASE SERVER INSTALLATION"
-echo " Enter a MariaDB root password if requested - the script will fail if you won't!"
-echo ""
-echo " Press <Enter> to start the installation:"
-read
+#clear
+#echo ""
+#echo " DATABASE SERVER INSTALLATION"
+#echo " Enter a MariaDB root password if requested - the script will fail if you won't!"
+#echo ""
+#echo " Press <Enter> to start the installation:"
+#read
 apt update && apt install mariadb-server -y
 /usr/sbin/service mysql stop
 ###configure MariaDB
@@ -238,19 +232,20 @@ key_buffer = 16M
 EOF
 /usr/sbin/service mysql restart
 ###restart MariaDB server and connect to MariaDB to create the database																	  
-clear
-echo ""
-echo " Enter the MariaDB root password when prompted for a password!"
-echo " The Nextcloud database and its user will be created."
-echo ""
-/usr/sbin/service mysql restart && mysql -uroot -p  <<EOF
+#echo ""
+#echo " Enter the MariaDB root password when prompted for a password!"
+#echo " The Nextcloud database and its user will be created."
+#echo ""
+/usr/sbin/service mysql restart && mysql -uroot <<EOF
 CREATE DATABASE nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 CREATE USER nextcloud@localhost identified by 'nextcloud';
 GRANT ALL PRIVILEGES on nextcloud.* to nextcloud@localhost;
 FLUSH privileges;
 EOF
+clear
 echo ""
 echo " Your database server will now be hardened - just follow the instructions."
+echo " Keep in mind: your MariaDB root password is still NOT set!"
 echo ""
 ###harden your MariDB server
 mysql_secure_installation
