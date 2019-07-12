@@ -8,7 +8,7 @@
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP 7.3, MariaDB 10.4
 # July, 12th 2019
 ############################################################
-# Debian Stretch 9.x AMD64 - Nextcloud 16
+# Debian Stretch 9.x/ Buster 10 AMD64 - Nextcloud 16
 ############################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
@@ -33,16 +33,11 @@ fail2ban-client status nextcloud
 ufw status verbose
 }
 ### START ###
-cd /usr/local/src
 apt install apt-transport-https git wget gnupg2 dirmngr -y
-mv /etc/apt/sources.list /etc/apt/sources.list.bak && touch /etc/apt/sources.list
-cat <<EOF >>/etc/apt/sources.list
-deb http://deb.debian.org/debian stretch main
-deb http://security.debian.org/debian-security stretch/updates main
-deb [arch=amd64] http://mirror2.hs-esslingen.de/mariadb/repo/10.4/debian stretch main
-deb [arch=amd64] https://packages.sury.org/php/ stretch main
-deb [arch=amd64] https://packages.sury.org/nginx-mainline stretch main
-EOF
+cd /etc/apt/sources.list.d
+echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list
+echo "deb [arch=amd64] https://packages.sury.org/php/ $(lsb_release -cs) main" | tee php.list
+echo "deb [arch=amd64] http://mirror2.hs-esslingen.de/mariadb/repo/10.4/debian $(lsb_release -cs) main" | tee mariadb.list
 ###prepare the server environment
 wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 wget -O /etc/apt/trusted.gpg.d/nginx-mainline.gpg https://packages.sury.org/nginx-mainline/apt.gpg
@@ -152,12 +147,12 @@ ln -s /usr/local/bin/gs /usr/bin/gs
 /usr/sbin/service nginx restart
 ###install MariaDB
 clear
-echo ""
-echo " DATABASE SERVER INSTALLATION"
-echo " Enter a MariaDB root password if requested - the script will fail if you won't!"
-echo ""
-echo " Press <Enter> to start the installation:"
-read
+#echo ""
+#echo " DATABASE SERVER INSTALLATION"
+#echo " Enter a MariaDB root password if requested - the script will fail if you won't!"
+#echo ""
+#echo " Press <Enter> to start the installation:"
+#read
 apt update && apt install mariadb-server -y
 /usr/sbin/service mysql stop
 ###configure MariaDB
@@ -240,11 +235,11 @@ EOF
 /usr/sbin/service mysql restart
 ###restart MariaDB server and connect to MariaDB to create the database
 clear
-echo ""
-echo " Enter the MariaDB root password when prompted for a password!"
-echo " The Nextcloud database and its user will be created."
-echo ""
-/usr/sbin/service mysql restart && mysql -uroot -p <<EOF
+#echo ""
+#echo " MariaDB root password is still blank, press <ENTER> when you are prompted for a password!"
+#echo " The Nextcloud database and its user will be created."
+#echo ""
+/usr/sbin/service mysql restart && mysql -uroot <<EOF
 CREATE DATABASE nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 CREATE USER nextcloud@localhost identified by 'nextcloud';
 GRANT ALL PRIVILEGES on nextcloud.* to nextcloud@localhost;
@@ -252,6 +247,7 @@ FLUSH privileges;
 EOF
 echo ""
 echo " Your database server will now be hardened - just follow the instructions."
+echo " Keep in mind: the MariaDB password is still NOT set!"
 echo ""
 ###harden your MariDB server
 mysql_secure_installation
