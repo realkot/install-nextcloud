@@ -1,15 +1,15 @@
-#########################################################
+############################################################
 # Carsten Rieger IT-Services
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-MARIADB-UBUNTU.SH
-# Version 8 (AMD64)
+# Version 9 (AMD64)
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP 7.3, MariaDB
-# July, 03rd 2019
-#########################################################
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP 7.3, MariaDB 10.4
+# July, 12th 2019
+############################################################
 # Ubuntu Bionic Beaver 18.04.x AMD64 - Nextcloud 16
-#########################################################
+############################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
 function update_and_clean() {
@@ -43,7 +43,7 @@ deb http://archive.ubuntu.com/ubuntu bionic-security main multiverse restricted 
 deb http://archive.ubuntu.com/ubuntu bionic-updates main multiverse restricted universe
 deb [arch=amd64] http://ppa.launchpad.net/ondrej/php/ubuntu bionic main
 deb [arch=amd64] http://ppa.launchpad.net/ondrej/nginx-mainline/ubuntu bionic main
-deb [arch=amd64] http://ftp.hosteurope.de/mirror/mariadb.org/repo/10.3/ubuntu bionic main
+deb [arch=amd64] http://ftp.hosteurope.de/mirror/mariadb.org/repo/10.4/ubuntu bionic main
 EOF
 ###prepare the server environment
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 4F4EA0AAE5267A6C
@@ -234,8 +234,6 @@ max_allowed_packet = 16M
 quick
 quote-names
 [isamchk]
-!include /etc/mysql/mariadb.cnf
-!includedir /etc/mysql/conf.d/
 key_buffer = 16M
 EOF
 /usr/sbin/service mysql restart
