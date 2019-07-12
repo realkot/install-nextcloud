@@ -8,7 +8,7 @@
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP 7.3, MariaDB 10.4
 # July, 12th 2019
 ############################################################
-# Debian Stretch 9.x/ Buster 10 AMD64 - Nextcloud 16
+# Debian Stretch 9.x/ Debian Buster 10 AMD64 - Nextcloud 16
 ############################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
