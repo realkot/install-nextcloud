@@ -1,15 +1,15 @@
-#########################################################
+############################################################
 # Carsten Rieger IT-Services
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-MARIADB-DEBIAN.SH
-# Version 7 (AMD64)
+# Version 9 (AMD64)
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP 7.3, MariaDB
-# July, 03rd 2019
-#########################################################
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP 7.3, MariaDB 10.4
+# July, 12th 2019
+############################################################
 # Debian Stretch 9.x AMD64 - Nextcloud 16
-#########################################################
+############################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
 function update_and_clean() {
@@ -39,7 +39,7 @@ mv /etc/apt/sources.list /etc/apt/sources.list.bak && touch /etc/apt/sources.lis
 cat <<EOF >>/etc/apt/sources.list
 deb http://deb.debian.org/debian stretch main
 deb http://security.debian.org/debian-security stretch/updates main
-deb [arch=amd64] http://mirror2.hs-esslingen.de/mariadb/repo/10.3/debian stretch main
+deb [arch=amd64] http://mirror2.hs-esslingen.de/mariadb/repo/10.4/debian stretch main
 deb [arch=amd64] https://packages.sury.org/php/ stretch main
 deb [arch=amd64] https://packages.sury.org/nginx-mainline stretch main
 EOF
@@ -235,8 +235,6 @@ max_allowed_packet = 16M
 quick
 quote-names
 [isamchk]
-!include /etc/mysql/mariadb.cnf
-!includedir /etc/mysql/conf.d/
 key_buffer = 16M
 EOF
 /usr/sbin/service mysql restart
