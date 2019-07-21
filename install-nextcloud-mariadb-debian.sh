@@ -568,6 +568,10 @@ array (
 EOF
 ###remove leading whitespaces
 sed -i 's/^[ ]*//' /var/www/nextcloud/config/config.php
+if [ $(lsb_release -cs)="buster" ]
+then
+sed -i "s/.*redis.sock.*/\'host\'\ \=\>\ \'\/var\/run\/redis\/redis\-server.sock\'\,/g" /var/www/nextcloud/config/config.php
+fi
 chown -R www-data:www-data /var/www
 restart_all_services
 update_and_clean
