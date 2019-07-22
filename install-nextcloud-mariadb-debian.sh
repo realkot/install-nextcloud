@@ -619,18 +619,11 @@ su - www-data -s /bin/bash -c 'php /var/www/nextcloud/occ app:disable survey_cli
 su - www-data -s /bin/bash -c 'php /var/www/nextcloud/occ app:disable firstrunwizard'
 su - www-data -s /bin/bash -c 'php /var/www/nextcloud/occ app:enable admin_audit'
 su - www-data -s /bin/bash -c 'php /var/www/nextcloud/occ app:enable files_pdfviewer'
-###clean up redis-server
-redis-cli -s /var/run/redis/redis.sock <<EOF
-FLUSHALL
-quit
-EOF
 ###Nextcloud occ db:... (maintenance/optimization)
 /usr/sbin/service nginx stop
 clear
 echo "---------------------------------"
 echo "Issue Nextcloud-DB optimizations!"
-echo "---------------------------------"
-echo "Press 'y' to issue optimizations."
 echo "---------------------------------"
 echo ""
 su - www-data -s /bin/bash -c 'php /var/www/nextcloud/occ db:add-missing-indices'
