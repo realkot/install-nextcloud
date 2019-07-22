@@ -3,12 +3,12 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-PSQL-DEBIAN.SH
-# Version 3.0 (AMD64)
+# Version 4.0 (AMD64)
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17.x, PHP 7.3, PSQL
-# July, 03rd 2019
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17.x, PHP 7.3, PSQL11
+# July, 22nd 2019
 #########################################################
-# Debian Stretch 9.x AMD64 - Nextcloud 16
+# Debian Buster or Stretch AMD64 - Nextcloud 16
 #########################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
@@ -36,19 +36,13 @@ ufw status verbose
 cd /usr/local/src
 ###prepare the server environment
 apt install apt-transport-https git wget gnupg2 dirmngr sudo locales-all -y
-mv /etc/apt/sources.list /etc/apt/sources.list.bak && touch /etc/apt/sources.list
-cat <<EOF >>/etc/apt/sources.list
-deb http://deb.debian.org/debian stretch main
-deb http://security.debian.org/debian-security stretch/updates main
-deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main
-deb https://packages.sury.org/php/ stretch main
-deb https://packages.sury.org/nginx-mainline stretch main
-EOF
-###prepare the server environment
+cd /etc/apt/sources.list.d
+echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list
+echo "deb [arch=amd64] https://packages.sury.org/php/ $(lsb_release -cs) main" | tee php.list
+echo "deb [arch=amd64] http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /pgdg.list
 wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 wget -O /etc/apt/trusted.gpg.d/nginx-mainline.gpg https://packages.sury.org/nginx-mainline/apt.gpg
-apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-wget -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 update_and_clean
 apt install lsb-release ca-certificates software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl ghostscript locate -y
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
@@ -524,6 +518,10 @@ array (
 EOF
 ###remove leading whitespaces
 sed -i 's/^[ ]*//' /var/www/nextcloud/config/config.php
+if [ $(lsb_release -cs)="buster" ]
+then
+sed -i "s/.*redis.sock.*/\'host\'\ \=\>\ \'\/var\/run\/redis\/redis\-server.sock\'\,/g" /var/www/nextcloud/config/config.php
+fi
 chown -R www-data:www-data /var/www
 restart_all_services
 update_and_clean
