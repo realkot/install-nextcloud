@@ -1,15 +1,15 @@
-#########################################################
+############################################################
 # Carsten Rieger IT-Services
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-PSQL-UBUNTU.SH
 # Version 3.0 (AMD64)
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17.x, PHP 7.3, PSQL
-# July, 03rd 2019
-#########################################################
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17 mainline, PHP 7.3, PSQL
+# August, 2nd 2019
+############################################################
 # Ubuntu Bionic Beaver 18.04.x AMD64 - Nextcloud 16
-#########################################################
+############################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
 function update_and_clean() {
@@ -33,27 +33,24 @@ fail2ban-client status nextcloud
 ufw status verbose
 }
 ### START ###
-cd /usr/local/src
-###prepare the server environment
 apt install gnupg2 wget -y
-mv /etc/apt/sources.list /etc/apt/sources.list.bak && touch /etc/apt/sources.list
-cat <<EOF >>/etc/apt/sources.list
-deb http://archive.ubuntu.com/ubuntu bionic main multiverse restricted universe
-deb http://archive.ubuntu.com/ubuntu bionic-security main multiverse restricted universe
-deb http://archive.ubuntu.com/ubuntu bionic-updates main multiverse restricted universe
-deb http://ppa.launchpad.net/ondrej/php/ubuntu bionic main
-deb http://ppa.launchpad.net/ondrej/nginx-mainline/ubuntu bionic main
-deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main
-EOF
+###prepare the server environment
+cd /etc/apt/sources.list.d
+echo "deb [arch=amd64] http://ppa.launchpad.net/ondrej/php/ubuntu $(lsb_release -cs) main" | tee php.list
+#echo "deb [arch=amd64] http://ppa.launchpad.net/ondrej/nginx-mainline/ubuntu $(lsb_release -cs) main" | tee nginx.list
+echo "deb [arch=amd64] http://nginx.org/packages/mainline/ubuntu $(lsb_release -cs) nginx" | tee nginx.list
+echo "deb [arch=amd64] http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | tee psql.list
+###
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 4F4EA0AAE5267A6C
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 update_and_clean
 apt install software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl locales-all locate ghostscript -y
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 update_and_clean
-apt install nginx nginx-extras -y
+apt install nginx -y
 ###enable NGINX autostart
 systemctl enable nginx.service
 ### prepare the NGINX
