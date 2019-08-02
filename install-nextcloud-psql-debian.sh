@@ -1,15 +1,15 @@
-#########################################################
+##############################################################
 # Carsten Rieger IT-Services
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-PSQL-DEBIAN.SH
-# Version 4.0 (AMD64)
+# Version 5.0 (AMD64)
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17.x, PHP 7.3, PSQL11
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17 mainline, PHP 7.3, PSQL11
 # July, 22nd 2019
-#########################################################
+##############################################################
 # Debian Buster or Stretch AMD64 - Nextcloud 16
-#########################################################
+##############################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
 function update_and_clean() {
@@ -37,11 +37,13 @@ cd /usr/local/src
 ###prepare the server environment
 apt install apt-transport-https git wget gnupg2 dirmngr sudo locales-all -y
 cd /etc/apt/sources.list.d
-echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list
+#echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list
+echo "deb [arch=amd64] http://nginx.org/packages/mainline/debian $(lsb_release -cs) nginx" | tee nginx.list
 echo "deb [arch=amd64] https://packages.sury.org/php/ $(lsb_release -cs) main" | tee php.list
 echo "deb [arch=amd64] http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee pgdg.list
 wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
-wget -O /etc/apt/trusted.gpg.d/nginx-mainline.gpg https://packages.sury.org/nginx-mainline/apt.gpg
+curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+#wget -O /etc/apt/trusted.gpg.d/nginx-mainline.gpg https://packages.sury.org/nginx-mainline/apt.gpg
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 update_and_clean
 apt install lsb-release ca-certificates software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl ghostscript locate -y
