@@ -6,7 +6,7 @@
 # Version 10 (AMD64)
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.17 mainline, PHP 7.3, MariaDB 10.4
-# July, 12th 2019
+# August, 2th 2019
 #####################################################################
 # Debian Stretch 9.x/ Debian Buster 10 AMD64 - Nextcloud 16
 #####################################################################
