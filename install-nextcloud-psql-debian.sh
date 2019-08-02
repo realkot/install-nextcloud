@@ -50,7 +50,7 @@ apt install lsb-release ca-certificates software-properties-common zip unzip scr
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 update_and_clean
-apt install nginx nginx-extras -y
+apt install nginx -y
 ###enable NGINX autostart
 systemctl enable nginx.service
 ### prepare the NGINX
