@@ -1,15 +1,15 @@
-############################################################
+#####################################################################
 # Carsten Rieger IT-Services
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-MARIADB-DEBIAN.SH
-# Version 9 (AMD64)
+# Version 10 (AMD64)
 # Nextcloud 16
-# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17, PHP 7.3, MariaDB 10.4
+# OpenSSL 1.1.1, TLSv1.3, NGINX 1.17 mainline, PHP 7.3, MariaDB 10.4
 # July, 12th 2019
-############################################################
+#####################################################################
 # Debian Stretch 9.x/ Debian Buster 10 AMD64 - Nextcloud 16
-############################################################
+#####################################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
 function update_and_clean() {
@@ -35,12 +35,14 @@ ufw status verbose
 ### START ###
 apt install apt-transport-https git wget gnupg2 dirmngr -y
 cd /etc/apt/sources.list.d
-echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list
+echo "deb [arch=amd64] http://nginx.org/packages/mainline/debian $(lsb_release -cs) nginx" | tee nginx.list
+#echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list
 echo "deb [arch=amd64] https://packages.sury.org/php/ $(lsb_release -cs) main" | tee php.list
 echo "deb [arch=amd64] http://mirror2.hs-esslingen.de/mariadb/repo/10.4/debian $(lsb_release -cs) main" | tee mariadb.list
 ###prepare the server environment
+curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+#wget -O /etc/apt/trusted.gpg.d/nginx-mainline.gpg https://packages.sury.org/nginx-mainline/apt.gpg
 wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
-wget -O /etc/apt/trusted.gpg.d/nginx-mainline.gpg https://packages.sury.org/nginx-mainline/apt.gpg
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
 ###
 update_and_clean
@@ -49,7 +51,7 @@ apt install lsb-release ca-certificates software-properties-common zip unzip scr
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 update_and_clean
-apt install nginx nginx-extras -y
+apt install nginx -y
 ###enable NGINX autostart
 systemctl enable nginx.service
 ### prepare the NGINX
