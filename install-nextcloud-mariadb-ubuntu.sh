@@ -308,6 +308,9 @@ deny all;
 location ~ ^/(?:\.|autotest|occ|issue|indie|db_|console) {
 deny all;
 }
+location ^~ /apps/rainloop/app/data {
+deny all;
+}
 location ~ \.(?:flv|mp4|mov|m4a)\$ {
 mp4;
 mp4_buffer_size 100M;
