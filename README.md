@@ -20,5 +20,3 @@ The scripts called install-nextcloud-<database>-debian.sh and install-nextcloud-
 Ready to go (?) … let’s start.
 
 Carsten Rieger: https://www.c-rieger.de
-
-PayPal.ME: https://www.paypal.me/criegerde
