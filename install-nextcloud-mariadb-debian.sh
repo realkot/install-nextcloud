@@ -33,7 +33,7 @@ fail2ban-client status nextcloud
 ufw status verbose
 }
 ### START ###
-apt install apt-transport-https git wget gnupg2 dirmngr -y
+apt install apt-transport-https curl wget git wget gnupg2 dirmngr -y
 cd /etc/apt/sources.list.d
 echo "deb [arch=amd64] http://nginx.org/packages/mainline/debian $(lsb_release -cs) nginx" | tee nginx.list
 #echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list
@@ -47,7 +47,7 @@ apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74C
 ###
 update_and_clean
 ###
-apt install lsb-release ca-certificates software-properties-common zip unzip screen curl git wget ffmpeg ghostscript libfile-fcntllock-perl locate htop tree -y
+apt install lsb-release ca-certificates software-properties-common zip unzip screen git ffmpeg ghostscript libfile-fcntllock-perl locate htop tree -y
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 update_and_clean
