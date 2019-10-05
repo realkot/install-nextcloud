@@ -33,7 +33,7 @@ fail2ban-client status nextcloud
 ufw status verbose
 }
 ### START ###
-apt install gnupg2 wget software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl locate ghostscript tree htop -y
+apt install gnupg2 wget curl -y
 ###prepare the server environment
 cd /etc/apt/sources.list.d
 echo "deb [arch=amd64] http://ppa.launchpad.net/ondrej/php/ubuntu $(lsb_release -cs) main" | tee php.list
@@ -46,9 +46,10 @@ apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 4F4EA0AAE5267A
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8   
 ###remove nginx and clean
 apt remove nginx nginx-common nginx-full nginx-extras -y --allow-change-held-packages
+apt install software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl locate ghostscript tree htop -y
 apt autoremove -y && apt autoclean -y && apt update -y && apt upgrade -y && apt dist-upgrade -y && apt install -f -y
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
-apt install nginx nginx-extras -y
+apt install nginx
 ###enable NGINX autostart
 systemctl enable nginx.service
 ### prepare the NGINX
@@ -100,7 +101,7 @@ mkdir -p /var/www/letsencrypt /etc/letsencrypt/rsa-certs /etc/letsencrypt/ecc-ce
 ###apply permissions
 chown -R www-data:www-data /var/www
 ###install PHP - Backup default files
-apt install php7.3-fpm php7.3-gd php7.3-mysql php7.3-curl php7.3-xml php7.3-zip php7.3-intl php7.3-mbstring php7.3-json php7.3-bz2 php7.3-ldap php-apcu imagemagick php-imagick -y
+apt install php7.3-fpm php7.3-gd php7.3-mysql php7.3-curl php7.3-xml php7.3-zip php7.3-intl php7.3-mbstring php7.3-json php7.3-bz2 php7.3-ldap php-apcu imagemagick php-imagick -y nginx-extras -y
 cp /etc/php/7.3/fpm/pool.d/www.conf /etc/php/7.3/fpm/pool.d/www.conf.bak
 cp /etc/php/7.3/cli/php.ini /etc/php/7.3/cli/php.ini.bak
 cp /etc/php/7.3/fpm/php.ini /etc/php/7.3/fpm/php.ini.bak
