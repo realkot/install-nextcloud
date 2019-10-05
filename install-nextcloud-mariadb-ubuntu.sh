@@ -33,23 +33,38 @@ fail2ban-client status nextcloud
 ufw status verbose
 }
 ### START ###
-apt install gnupg2 wget curl -y
+
+###REMOVE nginx
+apt purge -y nginx* --allow-change-held-packages
+update_and_clean
+
+###common utils
+apt install -y gnupg2 wget curl ca-certificates lsb-release
+
 ###prepare the server environment
 cd /etc/apt/sources.list.d
 echo "deb [arch=amd64] http://ppa.launchpad.net/ondrej/php/ubuntu $(lsb_release -cs) main" | tee php.list
 #echo "deb [arch=amd64] http://ppa.launchpad.net/ondrej/nginx-mainline/ubuntu $(lsb_release -cs) main" | tee nginx.list
-echo "deb [arch=amd64] http://nginx.org/packages/mainline/ubuntu $(lsb_release -cs) nginx" | tee nginx.list
+#echo "deb [arch=amd64] http://nginx.org/packages/mainline/ubuntu $(lsb_release -cs) nginx" | tee nginx.list
+###this line is from official nginx manual:
+echo "deb http://nginx.org/packages/mainline/ubuntu `lsb_release -cs` nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
 echo "deb [arch=amd64] http://ftp.hosteurope.de/mirror/mariadb.org/repo/10.4/ubuntu $(lsb_release -cs) main" | tee mariadb.list
 ###
 curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 4F4EA0AAE5267A6C
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8   
-###remove nginx and clean
-apt remove nginx nginx-common nginx-full nginx-extras -y --allow-change-held-packages
-apt install software-properties-common zip unzip screen curl git wget ffmpeg libfile-fcntllock-perl locate ghostscript tree htop -y
-apt autoremove -y && apt autoclean -y && apt update -y && apt upgrade -y && apt dist-upgrade -y && apt install -f -y
+
+###update and install
+update_and_clean
+apt install -y software-properties-common zip unzip screen git ffmpeg libfile-fcntllock-perl locate ghostscript tree htop
+
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
-apt install nginx
+###we have to install nginx-extras for workaround with:
+### nginx[23284]: nginx: [emerg] unknown directive "mp4" in /etc/nginx/conf.d/nextcloud.conf:48
+#apt install -y nginx
+#apt install -y nginx-full
+apt install -y nginx-extras
+
 ###enable NGINX autostart
 systemctl enable nginx.service
 ### prepare the NGINX
@@ -101,7 +116,7 @@ mkdir -p /var/www/letsencrypt /etc/letsencrypt/rsa-certs /etc/letsencrypt/ecc-ce
 ###apply permissions
 chown -R www-data:www-data /var/www
 ###install PHP - Backup default files
-apt install php7.3-fpm php7.3-gd php7.3-mysql php7.3-curl php7.3-xml php7.3-zip php7.3-intl php7.3-mbstring php7.3-json php7.3-bz2 php7.3-ldap php-apcu imagemagick php-imagick -y nginx-extras -y
+apt install -y php7.3-fpm php7.3-gd php7.3-mysql php7.3-curl php7.3-xml php7.3-zip php7.3-intl php7.3-mbstring php7.3-json php7.3-bz2 php7.3-ldap php-apcu imagemagick php-imagick
 cp /etc/php/7.3/fpm/pool.d/www.conf /etc/php/7.3/fpm/pool.d/www.conf.bak
 cp /etc/php/7.3/cli/php.ini /etc/php/7.3/cli/php.ini.bak
 cp /etc/php/7.3/fpm/php.ini /etc/php/7.3/fpm/php.ini.bak
@@ -153,7 +168,7 @@ ln -s /usr/local/bin/gs /usr/bin/gs
 #echo ""
 #echo " Press <Enter> to start the installation:"
 #read
-apt update && apt install mariadb-server -y
+apt update && apt install -y mariadb-server
 /usr/sbin/service mysql stop
 ###configure MariaDB
 mv /etc/mysql/my.cnf /etc/mysql/my.cnf.bak
@@ -253,7 +268,7 @@ echo ""
 mysql_secure_installation
 update_and_clean
 ###install Redis-Server
-apt install redis-server php-redis -y
+apt install -y redis-server php-redis
 cp /etc/redis/redis.conf /etc/redis/redis.conf.bak
 sed -i "s/port 6379/port 0/" /etc/redis/redis.conf
 sed -i s/\#\ unixsocket/\unixsocket/g /etc/redis/redis.conf
@@ -262,7 +277,7 @@ sed -i "s/# maxclients 10000/maxclients 512/" /etc/redis/redis.conf
 usermod -a -G redis www-data
 cp /etc/sysctl.conf /etc/sysctl.conf.bak && sed -i '$avm.overcommit_memory = 1' /etc/sysctl.conf
 ###install self signed certificates
-apt install ssl-cert -y
+apt install -y ssl-cert
 ###prepare NGINX for Nextcloud and SSL
 [ -f /etc/nginx/conf.d/default.conf ] && mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.bak
 touch /etc/nginx/conf.d/default.conf
@@ -575,7 +590,7 @@ chown -R www-data:www-data /var/www
 restart_all_services
 update_and_clean
 ###install fail2ban
-apt install fail2ban -y
+apt install -y fail2ban
 ###create a fail2ban Nextcloud filter
 touch /etc/fail2ban/filter.d/nextcloud.conf
 cat <<EOF >/etc/fail2ban/filter.d/nextcloud.conf
@@ -602,7 +617,7 @@ enabled = true
 EOF
 update_and_clean
 ###install ufw
-apt install ufw -y
+apt install -y ufw
 ###open firewall ports 80+443 for http(s)
 ufw allow 80/tcp
 ufw allow 443/tcp
