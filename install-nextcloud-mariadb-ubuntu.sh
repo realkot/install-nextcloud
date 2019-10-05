@@ -46,7 +46,7 @@ apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 4F4EA0AAE5267A
 apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8   
 ###remove nginx and clean
 apt remove nginx nginx-common nginx-full nginx-extras -y --allow-change-held-packages
-apt update && apt upgrade && apt install -f && apt dist-upgrade && apt autoremove && apt autoclean
+apt autoremove -y && apt autoclean -y && apt update -y && apt upgrade -y && apt dist-upgrade -y && apt install -f -y
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 apt install nginx nginx-extras -y
 ###enable NGINX autostart
