@@ -3,12 +3,12 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-MARIADB-DEBIAN.SH
-# Version 10 (AMD64)
-# Nextcloud 16
+# Version 11 (AMD64)
+# Nextcloud 17
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.17 mainline, PHP 7.3, MariaDB 10.4
-# August, 2th 2019
+# October, 6th 2019
 #####################################################################
-# Debian Stretch 9.x/ Debian Buster 10 AMD64 - Nextcloud 16
+# Debian Stretch 9.x/ Debian Buster 10 AMD64 - Nextcloud 17
 #####################################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
@@ -34,6 +34,7 @@ ufw status verbose
 }
 ### START ###
 apt install apt-transport-https curl wget git wget gnupg2 dirmngr -y
+apt install sudo -y
 cd /etc/apt/sources.list.d
 echo "deb [arch=amd64] http://nginx.org/packages/mainline/debian $(lsb_release -cs) nginx" | tee nginx.list
 #echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list

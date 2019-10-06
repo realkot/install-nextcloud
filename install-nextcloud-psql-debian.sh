@@ -3,12 +3,12 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-PSQL-DEBIAN.SH
-# Version 5.0 (AMD64)
+# Version 6.0 (AMD64)7
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.17 mainline, PHP 7.3, PSQL11
-# July, 22nd 2019
+# October, 06th 2019
 ##############################################################
-# Debian Buster or Stretch AMD64 - Nextcloud 16
+# Debian Buster or Stretch AMD64 - Nextcloud 17
 ##############################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
@@ -36,6 +36,7 @@ ufw status verbose
 cd /usr/local/src
 ###prepare the server environment
 apt install apt-transport-https curl wget git gnupg2 dirmngr sudo locales-all -y
+apt install sudo -y
 cd /etc/apt/sources.list.d
 #echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list
 echo "deb [arch=amd64] http://nginx.org/packages/mainline/debian $(lsb_release -cs) nginx" | tee nginx.list
