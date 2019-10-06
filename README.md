@@ -30,10 +30,10 @@ Copy and paste:
     rm -R /var/www/nextcloud
     apt update && apt upgrade -y && apt install git -y
 
-Then copy and paste this:
+Then copy and paste this, where is your code source:
 
     cd /usr/local/src
-    git clone https://github.com/realkot/install-nextcloud.git
+    git clone https://github.com/criegerde/install-nextcloud.git
     cd install-nextcloud
     find /usr/local/src/install-nextcloud -type f -name "*.sh" -exec chmod 0755 {} \;
     ./install-nextcloud-mariadb-ubuntu.sh
