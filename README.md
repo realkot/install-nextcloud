@@ -23,15 +23,12 @@ Carsten Rieger: https://www.c-rieger.de
 
 
 # Short example for Ubuntu 18.04 LTS
-Copy and paste:
+Copy and paste the following commands into the terminal, line by line:
 
     sudo -i
     apt purge mariadb* mysql* postgresql* nginx* php* redis* -y && apt autoremove -y
     rm -R /var/www/nextcloud
     apt update && apt upgrade -y && apt install git -y
-
-Then copy and paste this:
-
     cd /usr/local/src
     git clone https://github.com/criegerde/install-nextcloud.git
     cd install-nextcloud
