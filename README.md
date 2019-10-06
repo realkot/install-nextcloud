@@ -30,7 +30,7 @@ Copy and paste:
     rm -R /var/www/nextcloud
     apt update && apt upgrade -y && apt install git -y
 
-Then copy and paste this, where is your code source:
+Then copy and paste this:
 
     cd /usr/local/src
     git clone https://github.com/criegerde/install-nextcloud.git
