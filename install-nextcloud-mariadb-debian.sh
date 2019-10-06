@@ -33,7 +33,8 @@ fail2ban-client status nextcloud
 ufw status verbose
 }
 ### START ###
-apt install sudo apt-transport-https curl wget git wget gnupg2 dirmngr -y
+apt install apt-transport-https curl wget git wget gnupg2 dirmngr -y
+apt install sudo -y
 cd /etc/apt/sources.list.d
 echo "deb [arch=amd64] http://nginx.org/packages/mainline/debian $(lsb_release -cs) nginx" | tee nginx.list
 #echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list
