@@ -45,9 +45,9 @@ apt install -y gnupg2 wget curl ca-certificates lsb-release
 cd /etc/apt/sources.list.d
 echo "deb [arch=amd64] http://ppa.launchpad.net/ondrej/php/ubuntu $(lsb_release -cs) main" | tee php.list
 #echo "deb [arch=amd64] http://ppa.launchpad.net/ondrej/nginx-mainline/ubuntu $(lsb_release -cs) main" | tee nginx.list
-#echo "deb [arch=amd64] http://nginx.org/packages/mainline/ubuntu $(lsb_release -cs) nginx" | tee nginx.list
-###this line is from official nginx manual:
-echo "deb http://nginx.org/packages/mainline/ubuntu `lsb_release -cs` nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
+echo "deb [arch=amd64] http://nginx.org/packages/mainline/ubuntu $(lsb_release -cs) nginx" | tee nginx.list
+###this line is from official nginx manual/used by me (@realkot) for some debug tests
+#echo "deb http://nginx.org/packages/mainline/ubuntu `lsb_release -cs` nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
 echo "deb [arch=amd64] http://ftp.hosteurope.de/mirror/mariadb.org/repo/10.4/ubuntu $(lsb_release -cs) main" | tee mariadb.list
 ###
 curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
