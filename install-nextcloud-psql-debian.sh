@@ -35,7 +35,8 @@ ufw status verbose
 ### START ###
 cd /usr/local/src
 ###prepare the server environment
-apt install sudo apt-transport-https curl wget git gnupg2 dirmngr sudo locales-all -y
+apt install apt-transport-https curl wget git gnupg2 dirmngr sudo locales-all -y
+apt install sudo -y
 cd /etc/apt/sources.list.d
 #echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list
 echo "deb [arch=amd64] http://nginx.org/packages/mainline/debian $(lsb_release -cs) nginx" | tee nginx.list
