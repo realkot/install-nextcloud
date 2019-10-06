@@ -37,3 +37,5 @@ Then copy and paste this:
     cd install-nextcloud
     find /usr/local/src/install-nextcloud -type f -name "*.sh" -exec chmod 0755 {} \;
     ./install-nextcloud-mariadb-ubuntu.sh
+
+More info at https://www.c-rieger.de/nextcloud-using-one-shell-script/
