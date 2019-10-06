@@ -46,7 +46,7 @@ curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
 #wget -O /etc/apt/trusted.gpg.d/nginx-mainline.gpg https://packages.sury.org/nginx-mainline/apt.gpg
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 update_and_clean
-apt install lsb-release ca-certificates software-properties-common zip unzip screen git ffmpeg libfile-fcntllock-perl ghostscript locate -y
+apt install sudo lsb-release ca-certificates software-properties-common zip unzip screen git ffmpeg libfile-fcntllock-perl ghostscript locate -y
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 update_and_clean
