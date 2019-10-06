@@ -3,12 +3,12 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-MARIADB-DEBIAN.SH
-# Version 10 (AMD64)
-# Nextcloud 16
+# Version 11 (AMD64)
+# Nextcloud 17
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.17 mainline, PHP 7.3, MariaDB 10.4
-# August, 2th 2019
+# October, 6th 2019
 #####################################################################
-# Debian Stretch 9.x/ Debian Buster 10 AMD64 - Nextcloud 16
+# Debian Stretch 9.x/ Debian Buster 10 AMD64 - Nextcloud 17
 #####################################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
@@ -33,7 +33,7 @@ fail2ban-client status nextcloud
 ufw status verbose
 }
 ### START ###
-apt install apt-transport-https curl wget git wget gnupg2 dirmngr -y
+apt install sudo apt-transport-https curl wget git wget gnupg2 dirmngr -y
 cd /etc/apt/sources.list.d
 echo "deb [arch=amd64] http://nginx.org/packages/mainline/debian $(lsb_release -cs) nginx" | tee nginx.list
 #echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list
@@ -47,7 +47,7 @@ apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74C
 ###
 update_and_clean
 ###
-apt install sudo lsb-release ca-certificates software-properties-common zip unzip screen git ffmpeg ghostscript libfile-fcntllock-perl locate htop tree -y
+apt install lsb-release ca-certificates software-properties-common zip unzip screen git ffmpeg ghostscript libfile-fcntllock-perl locate htop tree -y
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 update_and_clean
