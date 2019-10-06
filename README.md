@@ -20,3 +20,20 @@ The scripts called install-nextcloud-<database>-debian.sh and install-nextcloud-
 Ready to go (?) … let’s start.
 
 Carsten Rieger: https://www.c-rieger.de
+
+
+# Short example for Ubuntu 18.04 LTS
+Copy and paste:
+
+    sudo -i
+    apt purge mariadb* mysql* postgresql* nginx* php* redis* -y && apt autoremove -y
+    rm -R /var/www/nextcloud
+    apt update && apt upgrade -y && apt install git -y
+
+Then copy and paste this:
+
+    cd /usr/local/src
+    git clone https://github.com/realkot/install-nextcloud.git
+    cd install-nextcloud
+    find /usr/local/src/install-nextcloud -type f -name "*.sh" -exec chmod 0755 {} \;
+    ./install-nextcloud-mariadb-ubuntu.sh
