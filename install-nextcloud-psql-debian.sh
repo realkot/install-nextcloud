@@ -3,12 +3,12 @@
 # https://www.c-rieger.de
 # https://github.com/criegerde
 # INSTALL-NEXTCLOUD-PSQL-DEBIAN.SH
-# Version 5.0 (AMD64)
+# Version 6.0 (AMD64)7
 # Nextcloud 16
 # OpenSSL 1.1.1, TLSv1.3, NGINX 1.17 mainline, PHP 7.3, PSQL11
-# July, 22nd 2019
+# October, 06th 2019
 ##############################################################
-# Debian Buster or Stretch AMD64 - Nextcloud 16
+# Debian Buster or Stretch AMD64 - Nextcloud 17
 ##############################################################
 #!/bin/bash
 ###global function to update and cleanup the environment
@@ -35,7 +35,7 @@ ufw status verbose
 ### START ###
 cd /usr/local/src
 ###prepare the server environment
-apt install apt-transport-https curl wget git gnupg2 dirmngr sudo locales-all -y
+apt install sudo apt-transport-https curl wget git gnupg2 dirmngr sudo locales-all -y
 cd /etc/apt/sources.list.d
 #echo "deb [arch=amd64] https://packages.sury.org/nginx-mainline/ $(lsb_release -cs) main" | tee nginx.list
 echo "deb [arch=amd64] http://nginx.org/packages/mainline/debian $(lsb_release -cs) nginx" | tee nginx.list
@@ -46,7 +46,7 @@ curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
 #wget -O /etc/apt/trusted.gpg.d/nginx-mainline.gpg https://packages.sury.org/nginx-mainline/apt.gpg
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 update_and_clean
-apt install sudo lsb-release ca-certificates software-properties-common zip unzip screen git ffmpeg libfile-fcntllock-perl ghostscript locate -y
+apt install lsb-release ca-certificates software-properties-common zip unzip screen git ffmpeg libfile-fcntllock-perl ghostscript locate -y
 ###instal NGINX using TLSv1.3, OpenSSL 1.1.1
 apt remove nginx nginx-common nginx-full -y --allow-change-held-packages
 update_and_clean
